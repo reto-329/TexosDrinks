@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Orders details</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/admin-orders.css">
+    <link rel="stylesheet" href="/css/order-status.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+    <%- include('../partials/csrfProtection') %>
+
+</head>
+<body>
+    <%- include('../partials/header3', { admin: admin }) %>
+    
+    <div class="admin-layout">
+        <%- include('partials/adminSidebar', { page: 'orders' }) %>
+        
+        <main class="admin-main">
+            <div class="admin-content">
+                <div class="order-header">
+                    <a href="/admin/orders" class="back-link">
+                        <i class="fas fa-arrow-left"></i> Back to Orders
+                    </a>
+                    <div class="order-title">
+                        Order #<%= order.id %>
+                    </div>
+                    <div class="order-status status-<%= order.status_name %>">
+                        <%= order.status_name.charAt(0).toUpperCase() + order.status_name.slice(1) %>
+                    </div>
+                </div>
+                
+                <!-- Order Status Update -->
+                <div class="order-card">
+                    <div class="card-header">
+                        <div class="card-title">Update Status</div>
+                    </div>
+                    <div class="card-body">
+                        <form id="updateStatusForm">
+                            <select id="statusSelect" class="status-select">
+                                <% statuses.forEach(status => { %>
+                                    <option value="<%= status.name %>" <%= order.status_name === status.name ? 'selected' : '' %>>
+                                        <%= status.name.charAt(0).toUpperCase() + status.name.slice(1) %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                            <button type="submit" class="update-btn">Update Status</button>
+                        </form>
+                        
+                        <div class="status-history">
+                            <h4>Status History</h4>
+                            <!-- Status history would be displayed here if tracked -->
+                            <div class="history-item">
+                                <div class="history-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="history-details">
+                                    <div class="history-status"><%= order.status_name.charAt(0).toUpperCase() + order.status_name.slice(1) %></div>
+                                    <div class="history-date"><%= new Date(order.updated_at).toLocaleString() %></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Customer Information -->
+                <div class="order-card">
+                    <div class="card-header">
+                        <div class="card-title">Customer Information</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="customer-info">
+                            <div class="info-group">
+                                <div class="info-label">Name</div>
+                                <div class="info-value"><%= user.username %></div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Email</div>
+                                <div class="info-value"><%= user.email %></div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Order Date</div>
+                                <div class="info-value"><%= new Date(order.created_at).toLocaleString() %></div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Last Updated</div>
+                                <div class="info-value"><%= new Date(order.updated_at).toLocaleString() %></div>
+                            </div>
+                        </div>
+                        
+                        <% if (address) { %>
+                            <h4>Shipping Address</h4>
+                            <div class="address-info">
+                                <div class="address-name"><%= address.first_name %> <%= address.last_name %></div>
+                                <div class="address-details">
+                                    <%= address.street %><% if (address.additional_info) { %>, <%= address.additional_info %><% } %>
+                                </div>
+                                <div class="address-location">
+                                    <%= address.city %>, <%= address.state %>, <%= address.country %>
+                                </div>
+                                <div class="address-phone">+234 <%= address.phone %></div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <!-- Order Items -->
+                <div class="order-card">
+                    <div class="card-header">
+                        <div class="card-title">Order Items</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="order-items">
+                            <% items.forEach(item => { %>
+                                <div class="order-item">
+                                    <div class="item-image">
+                                        <img src="<%= item.image_url || '/Images/product-placeholder.jpg' %>" alt="<%= item.name %>">
+                                    </div>
+                                    <div class="item-details">
+                                        <div class="item-name"><%= item.name %></div>
+                                        <div class="item-meta">
+                                            Quantity: <%= item.quantity %> | Category: <%= item.category_name %>
+                                        </div>
+                                    </div>
+                                    <div class="item-price">
+                                        ₦<%= (item.price * item.quantity).toLocaleString() %>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>Subtotal</span>
+                                <span>₦<%= order.total_amount.toLocaleString() %></span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Delivery Fee</span>
+                                <span>₦0</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total</span>
+                                <span>₦<%= order.total_amount.toLocaleString() %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle status update form submission
+            document.getElementById('updateStatusForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const status = document.getElementById('statusSelect').value;
+                updateOrderStatus(<%= order.id %>, status);
+            });
+        });
+        
+        // Update order status
+        async function updateOrderStatus(orderId, status) {
+            try {
+                const response = await fetch(`/api/admin/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to update order status');
+                }
+                
+                // Show success message
+                alert(`Order #${orderId} status updated to ${status}`);
+                
+                // Reload page to reflect changes
+                window.location.reload();
+            } catch (error) {
+                console.error('Error updating order status:', error);
+                alert('Failed to update order status. Please try again.');
+            }
+        }
+    </script>
+    <script src="/scripts/admin-csrf.js"></script>
+    <%- include('../partials/footer') %>
+</body>
+</html>

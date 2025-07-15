@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Payment Methods</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/header2.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/payment-methods.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="Images/logo1.png" sizes="256x256">
+    <script src="scripts/sidebar.js" defer></script>
+    <style>
+        .payment-container {
+            background: #fff;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .add-payment-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .add-payment-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        .payment-method {
+            margin-bottom: 1.5rem;
+        }
+        
+        .payment-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-medium);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .action-btn.delete:hover {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .empty-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-medium);
+        }
+        
+        .empty-text {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/headerSelector', { user: user || null }) %>
+    
+    <main class="dashboard-main">
+        <!-- Welcome Banner -->
+        <div class="dashboard-banner">
+            <div class="container">
+                <div class="banner-content">
+                    <div class="welcome-section">
+                        <div class="user-avatar">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="welcome-text">
+                            <h1>Payment Methods</h1>
+                            <p>Manage your payment options</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="container">
+                <div class="dashboard-layout">
+                    <!-- Sidebar Navigation -->
+                    <%- include('partials/sidebar', { activePage: 'settings', user: user, ordersCount: orderCount }) %>
+
+                    <!-- Main Content -->
+                    <section class="dashboard-content">
+                        <div class="content-header">
+                            <h2>Payment Methods</h2>
+                            <p>Add and manage your payment options</p>
+                        </div>
+
+                        <div class="payment-container">
+                            <!-- Empty state when no payment methods are added -->
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div class="empty-title">No Payment Methods Added</div>
+                                <div class="empty-text">Add a payment method to make checkout faster</div>
+                                <button class="add-payment-btn" id="add-payment-btn">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add Payment Method</span>
+                                </button>
+                            </div>
+                            
+                            <!-- This section will be shown when payment methods are added -->
+                            <div class="payment-methods-list" style="display: none;">
+                                <div class="payment-method">
+                                    <div class="payment-icon">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <div class="payment-details">
+                                        <div class="payment-name">Visa ending in 1234</div>
+                                        <div class="payment-description">Expires 12/2025</div>
+                                    </div>
+                                    <div class="payment-status active">
+                                        <span class="payment-status-badge">Default</span>
+                                    </div>
+                                    <div class="payment-actions">
+                                        <button class="action-btn edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="action-btn delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <button class="add-payment-btn">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add Payment Method</span>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <%- include('partials/footer') %>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addPaymentBtn = document.getElementById('add-payment-btn');
+            
+            addPaymentBtn.addEventListener('click', function() {
+                alert('Add payment method feature coming soon!');
+            });
+        });
+    </script>
+</body>
+</html>

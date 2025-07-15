@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Edit Profile</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/header2.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="Images/logo1.png" sizes="256x256">
+    <script src="scripts/sidebar.js" defer></script>
+    <%- include('partials/csrfProtection') %>
+    <style>
+        :root {
+            --primary: #dc2626;
+            --primary-dark: #b91c1c;
+            --gray: #6b7280;
+            --dark: #111827;
+        }
+
+        .form-container {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: relative;
+            margin-top: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+            font-size: 0.95rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .btn-save {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.25rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        .btn-save:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-success {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+            border: 1px solid rgba(39, 174, 96, 0.2);
+        }
+        
+        .alert-danger {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+        
+        .form-note {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+            line-height: 1.4;
+        }
+
+        /* Highlight edited fields */
+        .form-control.edited {
+            border-color: var(--primary);
+            background-color: rgba(220, 38, 38, 0.05);
+        }
+
+        .content-header {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+        .content-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .content-header p {
+            font-size: 0.95rem;
+            color: var(--gray);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 1.25rem;
+            }
+            
+            .btn-save {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+                top: 0.5rem;
+                right: 0.5rem;
+            }
+            
+            .content-header h2 {
+                font-size: 1.3rem;
+                padding-right: 100px; /* Space for save button */
+            }
+            
+            .content-header p {
+                font-size: 0.9rem;
+            }
+            
+            .form-control {
+                padding: 0.65rem 0.9rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 1rem;
+            }
+            
+            .btn-save {
+                padding: 0.45rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            
+            .content-header h2 {
+                font-size: 1.2rem;
+            }
+            
+            .form-group label {
+                font-size: 0.9rem;
+            }
+            
+            .form-note {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/headerSelector', { user: user || null }) %>
+    
+    <main class="dashboard-main">
+        <!-- Welcome Banner -->
+        <div class="dashboard-banner">
+            <div class="container">
+                <div class="banner-content">
+                    <div class="welcome-section">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="welcome-text">
+                            <h1>Edit Your Profile</h1>
+                            <p>Update your personal information</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="container">
+                <div class="dashboard-layout">
+                    <!-- Sidebar Navigation -->
+                    <%- include('partials/sidebar', { activePage: 'profile', user: user, ordersCount: orderCount }) %>
+
+                    <!-- Main Content -->
+                    <section class="dashboard-content">
+                        <div class="content-header">
+                            <h2>Edit Profile</h2>
+                            <p>Update your account information</p>
+                            <button id="btn-save" class="btn-save">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+
+                        <div class="form-container">
+                            <div id="alert-container"></div>
+                            
+                            <form id="profile-form">
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" id="username" name="username" class="form-control" value="<%= user.username %>" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" name="email" class="form-control" value="<%= user.email %>" required>
+                                    <p class="form-note">This email will be used for account notifications and order updates.</p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="phonenumber">Phone Number</label>
+                                    <input type="tel" id="phonenumber" name="phonenumber" class="form-control" value="<%= user.phonenumber || '' %>" required>
+                                    <p class="form-note">Enter your phone number without country code (e.g., 8012345678).</p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <button type="submit" class="btn-update" style="display: none;">Update Profile</button>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <%- include('partials/footer') %>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileForm = document.getElementById('profile-form');
+            const alertContainer = document.getElementById('alert-container');
+            const btnSave = document.getElementById('btn-save');
+            
+            // Store original values
+            const originalValues = {
+                username: document.getElementById('username').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phonenumber: document.getElementById('phonenumber').value.trim()
+            };
+            
+            // Track edited fields
+            const editedFields = new Set();
+            
+            // Function to check for changes
+            function checkForChanges() {
+                const currentValues = {
+                    username: document.getElementById('username').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phonenumber: document.getElementById('phonenumber').value.trim()
+                };
+                
+                // Reset edited fields
+                editedFields.clear();
+                document.querySelectorAll('.form-control').forEach(input => {
+                    input.classList.remove('edited');
+                });
+                
+                // Check each field
+                for (const field in currentValues) {
+                    if (currentValues[field] !== originalValues[field]) {
+                        editedFields.add(field);
+                        document.querySelector(`[name="${field}"]`).classList.add('edited');
+                    }
+                }
+                
+                // Toggle save button visibility
+                if (editedFields.size > 0) {
+                    btnSave.style.display = 'block';
+                } else {
+                    btnSave.style.display = 'none';
+                }
+            }
+            
+            // Add event listeners to form inputs
+            const formInputs = profileForm.querySelectorAll('input');
+            formInputs.forEach(input => {
+                input.addEventListener('input', checkForChanges);
+                input.addEventListener('change', checkForChanges);
+            });
+            
+            // Save changes button click handler
+            btnSave.addEventListener('click', function() {
+                profileForm.dispatchEvent(new Event('submit'));
+            });
+            
+            // Form submission handler
+            profileForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Clear previous alerts
+                alertContainer.innerHTML = '';
+                
+                // Get form data
+                const formData = {
+                    username: document.getElementById('username').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phonenumber: document.getElementById('phonenumber').value.trim(),
+                    _csrf: document.querySelector('meta[name="csrf-token"]').content
+                };
+                
+                try {
+                    const response = await fetch('/api/users/profile', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': formData._csrf
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        // Show success message
+                        alertContainer.innerHTML = `
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i> ${data.message || 'Profile updated successfully!'}
+                            </div>
+                        `;
+                        
+                        // Update original values
+                        if (data.user) {
+                            originalValues.username = data.user.username || formData.username;
+                            originalValues.email = data.user.email || formData.email;
+                            originalValues.phonenumber = data.user.phonenumber || formData.phonenumber;
+                        } else {
+                            originalValues.username = formData.username;
+                            originalValues.email = formData.email;
+                            originalValues.phonenumber = formData.phonenumber;
+                        }
+                        
+                        // Remove edited classes and hide save button
+                        document.querySelectorAll('.form-control').forEach(input => {
+                            input.classList.remove('edited');
+                        });
+                        btnSave.style.display = 'none';
+                        editedFields.clear();
+                        
+                        // Refresh page after 2 seconds
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        // Show error message
+                        alertContainer.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle"></i> ${data.message || 'Failed to update profile. Please try again.'}
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle"></i> An error occurred. Please try again.
+                        </div>
+                    `;
+                }
+            });
+
+            // Initial check for changes (in case page loads with modified values)
+            checkForChanges();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Admin Login</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/admin-login.css">
+    <link rel="stylesheet" href="/css/admin-notification.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="Images/logo1.png" sizes="256x256">
+</head>
+<body>
+    <main class="auth-page">
+        <div class="auth-container">
+            <a href="/" class="back-home-link">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+            <div class="auth-header">
+                <h1 class="auth-title">
+                    <span class="welcome-text">ADMIN</span> <span class="auth-title-accent">LOGIN</span>
+                </h1>
+                <p class="auth-description">Sign in to your TexosDrinks admin account</p>
+            </div>
+            <div class="auth-card">
+                <div class="auth-card-header">
+                    <h2 class="auth-card-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/>
+                            <polyline points="10,17 15,12 10,7"/>
+                            <line x1="15" y1="12" x2="3" y2="12"/>
+                        </svg>
+                        Admin Sign In
+                    </h2>
+                </div>
+                <div class="auth-card-content">
+                    <form class="auth-form" id="adminLoginForm">
+                        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                        <div class="admin-login-error" id="adminLoginError">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span id="errorMessage"></span>
+                        </div>
+                        <div class="form-group floating-label-group">
+                            <input type="text" id="adminUsername" class="form-input" name="username" placeholder=" " required />
+                            <label for="adminUsername" class="floating-label">Username</label>
+                        </div>
+                        <div class="form-group password-floating-label-group">
+                            <div class="password-input-container">
+                                <input type="password" id="adminPassword" class="form-input" name="password" placeholder=" " required />
+                                <label for="adminPassword" class="password-floating-label">Password</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="auth-submit-btn">Sign In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="/scripts/admin-notifications.js"></script>
+    <script>
+// Function to clear error messages
+function clearAdminLoginErrors() {
+    const errorDiv = document.getElementById('adminLoginError');
+    errorDiv.style.display = 'none';
+}
+
+// Add input event listeners to clear errors when user starts typing
+document.getElementById('adminUsername').addEventListener('input', clearAdminLoginErrors);
+document.getElementById('adminPassword').addEventListener('input', clearAdminLoginErrors);
+
+document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    const errorDiv = document.getElementById('adminLoginError');
+    
+    // Set loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+    errorDiv.style.display = 'none';
+    
+    try {
+        const formData = {
+            username: form.username.value.trim(),
+            password: form.password.value
+        };
+        
+        // Basic client-side validation
+        if (!formData.username || !formData.password) {
+            throw new Error('Please enter both username and password');
+        }
+        const csrfToken = form._csrf.value;
+        const response = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-csrf-token': csrfToken
+            },
+            body: JSON.stringify(formData),
+            credentials: 'include' // Important for cookies
+        });
+        let data;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            console.error('Non-JSON response:', text);
+            throw new Error('Unexpected server response. Please contact support.');
+        }
+        if (!response.ok) {
+            throw new Error(data.message || 'Login failed. Please try again.');
+        }
+        
+        // Show success notification
+        showAdminNotification('Login successful! Redirecting...', 'success');
+        
+        // Redirect to dashboard on success
+        setTimeout(() => {
+            window.location.href = '/admin/dashboard';
+        }, 1000);
+        
+    } catch (err) {
+        // Show error to user
+        document.getElementById('errorMessage').textContent = err.message;
+        errorDiv.style.display = 'flex';
+        
+        // Shake the form to indicate error
+        form.classList.add('shake');
+        setTimeout(() => form.classList.remove('shake'), 500);
+        
+    } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+    }
+});
+    </script>
+</body>
+</html>

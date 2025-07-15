@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Products List</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/productsList.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+    <%- include('../partials/csrfProtection') %>
+</head>
+<body>
+    <%- include('../partials/header3', { admin: admin }) %>
+    
+    <main class="admin-products">
+        <div class="container">
+            <div class="admin-layout">
+                <%- include('partials/adminSidebar', { page: 'products' }) %>
+                
+                <section class="main-content">
+                    <div class="content-header">
+                        <div class="header-flex">
+                            <div>
+                                <h1><%= category ? category.name : 'Category' %> Products</h1>
+                                <p class="subtitle">
+                                    <%= products && products.length ? `${products.length} product${products.length !== 1 ? 's' : ''} found` : 'No products in this category' %>
+                                </p>
+                            </div>
+                            <a href="/admin/products" class="btn-secondary">
+                                <i class="fas fa-arrow-left mr-2"></i> Back to Categories
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="products-list">
+                        <% if (products && products.length) { %>
+                            <div class="products-grid">
+                                <% products.forEach(function(product) { %>
+                                    <article class="product-card" data-product-id="<%= product._id || product.id %>">
+                                        <div class="product-image-container">
+                                            <% 
+                                                let imgUrl = '/Images/empty-categories.svg';
+                                                let imgAlt = 'No product image available';
+                                                if (product.images && product.images.length > 0) {
+                                                    const firstImage = product.images[0];
+                                                    if (firstImage.url) {
+                                                        imgUrl = firstImage.url;
+                                                        imgAlt = product.name;
+                                                    } else if (typeof firstImage === 'string') {
+                                                        imgUrl = firstImage;
+                                                        imgAlt = product.name;
+                                                    }
+                                                }
+                                            %>
+                                            <img src="<%= imgUrl %>" alt="<%= imgAlt %>" class="product-image" loading="lazy">
+                                        </div>
+                                        <div class="product-info">
+                                            <h3 class="product-name">
+                                                <%= product.name %>
+                                                <% if (product.is_new) { %>
+                                                    <span class="badge-new">New</span>
+                                                <% } %>
+                                            </h3>
+                                            <p class="product-description"><%= product.description %></p>
+                                            <div class="product-meta">
+                                                <span class="product-price">₦<%= parseFloat(product.price).toFixed(2) %></span>
+                                                <span class="product-stock"><%= product.stock %> in stock</span>
+                                            </div>
+                                            <div class="product-actions">
+                                                <button class="action-btn edit-btn" 
+                                                    title="Edit <%= product.name %>"
+                                                    aria-label="Edit <%= product.name %>"
+                                                    data-product-id="<%= product._id || product.id %>">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="action-btn delete-btn"
+                                                    title="Delete <%= product.name %>"
+                                                    aria-label="Delete <%= product.name %>"
+                                                    data-product-id="<%= product._id || product.id %>">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </article>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-box-open empty-categories-icon" aria-hidden="true"></i>
+                                <h3>No Products Found</h3>
+                                <p>This category does not have any products yet.</p>
+                                <a href="/admin/products" class="btn-secondary">
+                                    <i class="fas fa-arrow-left mr-2"></i> Back to Categories
+                                </a>
+                            </div>
+                        <% } %>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Product Popup -->
+    <div id="editProductPopup" class="edit-popup-modal" aria-hidden="true">
+        <!-- Content will be loaded dynamically -->
+    </div>
+
+    <!-- Delete Confirmation Popup -->
+    <div id="deleteConfirmPopup" class="delete-confirm-modal" aria-hidden="true">
+        <div class="delete-confirm-content">
+            <p class="delete-confirm-message">Are you sure you want to delete this product? This cannot be undone...</p>
+            <div class="delete-confirm-actions">
+                <button id="confirmDeleteBtn" class="btn-danger">Yes</button>
+                <button id="cancelDeleteBtn" class="btn-secondary">No</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    .delete-confirm-modal {
+        display: none;
+        position: fixed;
+        z-index: 1002;
+        left: 0; top: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.35);
+        align-items: center; justify-content: center;
+    }
+    .delete-confirm-modal.active {
+        display: flex;
+    }
+    .delete-confirm-content {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+        padding: 2rem 2.5rem;
+        min-width: 320px;
+        max-width: 90vw;
+        text-align: center;
+        animation: popupIn 0.18s ease;
+    }
+    @keyframes popupIn {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .delete-confirm-message {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        color: #222;
+    }
+    .delete-confirm-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+    .btn-danger {
+        background: #e74c3c;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .btn-danger:hover {
+        background: #c0392b;
+    }
+    .btn-secondary {
+        background: #f4f4f4;
+        color: #333;
+        border: 1px solid #ccc;
+        padding: 0.5rem 1.5rem;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .btn-secondary:hover {
+        background: #e0e0e0;
+    }
+    .empty-categories-icon {
+        font-size: 4rem;
+        color: #d1d5db;
+        margin-bottom: 1rem;
+        display: block;
+    }
+    </style>
+
+    <script src="/scripts/admin-csrf.js"></script>
+    <script src="/scripts/adminProductEdit.js"></script>
+</body>
+</html>

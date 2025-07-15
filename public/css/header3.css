@@ -1,0 +1,310 @@
+/* Header3-specific styles */
+:root {
+    --primary-color: #dc2626;
+    --primary-hover: #b91c1c;
+    --primary-light: #fef2f2;
+    --accent-color: #f9c411;
+    --accent-hover: #f59e0b;
+    --text-dark: #111827;
+    --text-medium: #374151;
+    --text-light: #6b7280;
+    --border-color: #e5e7eb;
+    --bg-light: #f8fafc;
+    --white: #ffffff;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    --gradient-accent: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+}
+
+/* Header Base Styles */
+.header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: var(--transition);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 5rem;
+}
+
+/* Logo Styles */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 50px;
+    width: auto;
+}
+
+.logo-text {
+    display: flex;
+    align-items: baseline;
+    gap: 0rem;
+    font-size: 1.5rem; /* Base font size */
+}
+
+.logo-accent1, .logo-accent2 {
+    font-weight: 900;
+    letter-spacing: -0.02em;
+}
+
+.logo-accent1 {
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.logo-accent2 {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.admin-badge {
+    font-size: 0.8em; /* Relative to parent */
+    font-weight: bold;
+    color: var(--text-medium);
+}
+
+/* Header Actions */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* User Dropdown */
+.user-dropdown {
+    position: relative;
+}
+
+.user-dropdown-btn {
+    background: var(--white);
+    border: 2px solid rgba(220, 38, 38, 0.2);
+    color: var(--text-dark);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 1rem;
+    transition: var(--transition);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.user-dropdown-btn:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.user-dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.75rem);
+    background: var(--white);
+    min-width: 220px;
+    box-shadow: var(--shadow-lg);
+    border-radius: 1rem;
+    overflow: hidden;
+    z-index: 1000;
+    border: 1px solid var(--border-color);
+    animation: dropdown-fade-in 0.3s ease-out;
+}
+
+@keyframes dropdown-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-dropdown.active .user-dropdown-content {
+    display: block;
+}
+
+.user-dropdown-content a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    color: var(--text-medium);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    transition: var(--transition);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.user-dropdown-content a:last-child {
+    border-bottom: none;
+}
+
+.user-dropdown-content a:hover {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    padding-left: 1.5rem;
+}
+
+/* Mobile Menu */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    z-index: 300;
+}
+
+.mobile-menu-btn .fa-times {
+    display: none;
+}
+
+.mobile-menu-btn.active .fa-bars {
+    display: none;
+}
+
+.mobile-menu-btn.active .fa-times {
+    display: block;
+}
+
+.nav-mobile {
+    display: none;
+    flex-direction: column;
+    background: var(--white);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    padding: 1rem 0;
+}
+
+.nav-mobile.active {
+    display: flex;
+}
+
+.mobile-welcome {
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.nav-mobile .nav-link {
+    padding: 0.75rem 1.5rem;
+    color: var(--text-dark);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nav-mobile .nav-link:hover {
+    background: var(--primary-light);
+    color: var(--primary-color);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+    .user-dropdown {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .header-content {
+        height: 4.5rem;
+    }
+
+    .logo-img {
+        height: 40px;
+    }
+
+    .logo-text {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-menu-btn {
+        font-size: 1.5rem;
+    }
+    .logo-img {
+        height: 35px;
+    }
+    .logo-text {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 375px) {
+    .logo-text {
+        font-size: 1rem;
+    }
+
+    .mobile-menu-btn {
+        font-size: 1.3rem;
+    }
+    .header-content {
+        height: 4rem;
+    }
+}
+
+/* Logout Notification */
+.logout-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-lg);
+    z-index: 9999;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

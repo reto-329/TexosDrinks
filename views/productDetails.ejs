@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Product Details</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/products.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/header2.css">
+    <link rel="stylesheet" href="/css/productDetails.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+    <meta name="user-logged-in" content="<%= user ? 'true' : 'false' %>">
+</head>
+<body>
+    <%- include('partials/headerSelector', { user: user || null }) %>
+    
+    <main class="product-details-page">
+        <div class="container">
+            <% if (notFound) { %>
+                <div class="not-found">
+                    <div class="not-found-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h2>Product Not Found</h2>
+                    <p>The product you are looking for does not exist or may have been removed.</p>
+                    <a href="/products" class="back-to-products-btn">
+                        <i class="fas fa-arrow-left"></i> Back to Products
+                    </a>
+                </div>
+            <% } else { %>
+                <nav class="breadcrumbs">
+                    <a href="/">
+                        <i class="fas fa-home"></i>
+                        Home
+                    </a>
+                    <i class="fas fa-chevron-right"></i>
+                    <a href="/products">Products</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span><%= product.name %></span>
+                </nav>
+
+                <div class="product-details-container"
+                    data-product-id="<%= product.id %>"
+                    data-product-name="<%= product.name %>"
+                    data-product-price="<%= product.price %>"
+                    data-product-image="<%= (product.images && product.images.length > 0) ? product.images[0] : (product.imageUrl || '/Images/logo1.png') %>"
+                    data-product-stock="<%= product.stockCount || product.stock || 0 %>">
+                    <div class="product-gallery">
+                        <div class="main-image-container">
+                            <% if (product.images && product.images.length > 0) { %>
+                                <img src="<%= product.images[0] %>" alt="<%= product.name %>" class="main-image" id="mainImage">
+                            <% } else { %>
+                                <img src="<%= product.imageUrl || '/Images/logo1.png' %>" alt="<%= product.name %>" class="main-image" id="mainImage">
+                            <% } %>
+                            
+                            <div class="image-badges">
+                                <% if (product.isNew) { %>
+                                    <span class="badge new">New</span>
+                                <% } %>
+                                <% if (product.isOrganic) { %>
+                                    <span class="badge organic">Organic</span>
+                                <% } %>
+                            </div>
+                        </div>
+                        
+                        <% if (product.images && product.images.length > 1) { %>
+                            <div class="thumbnails-container">
+                                <div class="thumbnails">
+                                    <% product.images.forEach(function(img, index) { %>
+                                        <img src="<%= img %>" alt="<%= product.name %> view <%= index + 1 %>" 
+                                             class="thumbnail <%= index === 0 ? 'active' : '' %>" 
+                                             data-image="<%= img %>">
+                                    <% }); %>
+                                </div>
+                                <button class="thumbnail-nav prev" id="thumbPrev">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="thumbnail-nav next" id="thumbNext">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="product-info">
+                        <div class="product-header">
+                            <div class="product-title-section">
+                                <h1 class="product-title"><%= product.name %></h1>
+                            </div>
+                        </div>
+
+                        <div class="product-meta alt-meta">
+                            <div class="meta-item">
+                                <span class="meta-label"><i class="fas fa-tag"></i> Category:</span>
+                                <span class="meta-value"><%= product.categoryName || product.category_name || 'Uncategorized' %></span>
+                            </div>
+                            <span class="meta-separator">|</span>
+                            <div class="meta-item">
+                                <span class="meta-label"><i class="fas fa-barcode"></i> SKU:</span>
+                                <span class="meta-value">TD-<%= product.id %></span>
+                            </div>
+                        </div>
+
+                        <div class="price-section">
+                            <div class="price-main">
+                                 <span class="current-price">₦<%= Number(product.price).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
+                                <% if (product.originalPrice && Number(product.originalPrice) > Number(product.price)) { %>
+                                    <span class="original-price">₦<%= Number(product.originalPrice).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
+                                    <span class="discount-badge">Save <%= Math.round(((Number(product.originalPrice) - Number(product.price)) / Number(product.originalPrice)) * 100) %>%</span>
+                                <% } %>
+                            </div>
+                            <!-- <div class="price-details">
+                                <span class="price-per-unit">₦<%= (Number(product.price) / 500 * 100).toFixed(2) %> per 100ml</span>
+                                <span class="tax-info">Price includes VAT</span>
+                            </div> -->
+                        </div>
+
+                        <div class="product-description">
+                            <h3>Product Description</h3>
+                            <p><%= product.description || 'Experience the pure taste and quality of this premium beverage. Made with the finest ingredients and crafted to perfection.' %></p>
+                        </div>
+
+                        <div class="product-options">
+                            <div class="option-group">
+                                <label class="option-label">Quantity:</label>
+                                <div class="quantity-selector">
+                                    <button class="qty-btn minus" id="qtyMinus" type="button" aria-label="Decrease quantity">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" class="qty-input" id="qtyInput" value="1" min="1" max="<%= product.stockCount || product.stock || 1 %>" aria-label="Product quantity" <%= (product.stockCount || product.stock || 0) < 1 ? 'disabled' : '' %>>
+                                    <button class="qty-btn plus" id="qtyPlus" type="button" aria-label="Increase quantity">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <% if ((product.stockCount || product.stock || 0) < 1) { %>
+                                    <div class="stock-warning">Out of stock</div>
+                                <% } else { %>
+                                    <div class="stock-available">Available: <%= product.stockCount || product.stock %></div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="stock-info">
+                            <div class="stock-status <%= product.inStock ? 'in-stock' : 'out-of-stock' %>">
+                                <% if (product.inStock) { %>
+                                    <i class="fas fa-check-circle"></i>
+                                    <% if (product.stockCount && product.stockCount < 10) { %>
+                                        <span>In Stock - Only <%= product.stockCount %> left</span>
+                                    <% } else { %>
+                                        <span>In Stock</span>
+                                    <% } %>
+                                <% } else { %>
+                                    <i class="fas fa-times-circle"></i>
+                                    <span>Out of Stock</span>
+                                <% } %>
+                            </div>
+                            <div class="delivery-info">
+                                <i class="fas fa-truck"></i>
+                                <span>Free delivery for orders over ₦5,000</span>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <% if (product.inStock) { %>
+                                <button class="add-to-cart-btn primary" id="addToCartBtn">
+                                    <i class="fas fa-cart-plus"></i>
+                                    <span>Add to Cart</span>
+                                </button>
+                            <% } else { %>
+                                <button class="notify-btn primary" id="notifyBtn">
+                                    <i class="fas fa-bell"></i>
+                                    <span>Notify When Available</span>
+                                </button>
+                            <% } %>
+                            <button class="share-btn" id="shareBtn">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Tabs Section -->
+                <div class="product-tabs-section">
+                    <div class="tabs-nav">
+                        <button class="tab-btn active" data-tab="description">Description</button>
+                    </div>
+
+                    <div class="tabs-content">
+                        <div class="tab-panel active" id="description">
+                            <h3>Detailed Description</h3>
+                            <p><%= product.description || 'Our premium beverage is crafted from the finest ingredients, providing you with exceptional taste and quality in every sip. Each bottle is carefully prepared to ensure maximum freshness and flavor.' %></p>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+    <script src="/scripts/product-details.js"></script>
+    <script src="/scripts/addToCart.js"></script>
+</body>
+</html>

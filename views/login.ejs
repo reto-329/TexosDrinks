@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Login</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/header2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="Images/logo1.png" sizes="256x256">
+</head>
+<body>
+    <%- include('partials/headerSelector', { user: user || null }) %>
+
+    <main class="auth-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1 class="auth-title">
+                    <span class="welcome-text">WELCOME</span> <span class="auth-title-accent">BACK</span>
+                </h1>
+                <p class="auth-description">Sign in to your TexosDrinks account</p>
+            </div>
+
+            <div class="auth-card">
+                <div class="auth-card-header">
+                    <h2 class="auth-card-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/>
+                            <polyline points="10,17 15,12 10,7"/>
+                            <line x1="15" y1="12" x2="3" y2="12"/>
+                        </svg>
+                        Sign In
+                    </h2>
+                </div>
+                <div class="auth-card-content">
+                    <div class="alert alert-error" id="errorAlert" style="display: none;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="errorMessage"></span>
+                    </div>
+
+                    <% if (typeof message !== 'undefined' && message) { %>
+                      <div class="alert alert-warning" style="margin: 1em 0; text-align: center; color: #b85c00; background: #fffbe6; border: 1px solid #ffe58f; padding: 0.75em 1em; border-radius: 4px;">
+                        <%= message %>
+                      </div>
+                    <% } %>
+
+                    <form class="auth-form" id="loginForm">
+                        <div class="form-group floating-label-group">
+                            <input type="email" id="email" class="form-input" placeholder=" " required/>
+                            <label for="email" class="floating-label">Email Address</label>
+                        </div>
+
+                        <div class="form-group password-floating-label-group">
+                            <div class="password-input-container">
+                                <input type="password" id="password" class="form-input" placeholder=" " required/>
+                                <label for="password" class="password-floating-label">Password</label>
+                                <!-- Show password toggle will be injected by JS -->
+                            </div>
+                        </div>
+
+                        <div class="forgot-password">
+                            <button type="button" class="forgot-password-link" onclick="handleForgotPassword()">
+                                Forgot Password?
+                            </button>
+                        </div>
+
+                        <button type="submit" class="auth-submit-btn desktop-submit-btn" id="submitBtn">
+                            Sign In
+                        </button>
+
+                        <div class="auth-footer">
+                            <p>
+                                Don't have an account?
+                                <a href="/register" class="auth-footer-link">Create Account</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script src="scripts/common.js"></script>
+    <script src="scripts/show-password.js"></script>
+    <script src="scripts/login.js"></script>
+</body>
+</html>

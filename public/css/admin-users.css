@@ -1,0 +1,293 @@
+/* Admin Users Page Styles */
+
+/* Delete button */
+.delete-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.delete-btn i {
+    margin-right: 4px;
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* Card actions */
+.card-actions {
+    padding-top: 12px;
+    margin-top: 12px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Notification */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification.success {
+    background-color: #4caf50;
+}
+
+.notification.error {
+    background-color: #f44336;
+}
+
+.notification.fade-out {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 500px;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+.modal-header {
+    padding: 16px 24px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.close-modal {
+    color: #777;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-body p {
+    margin: 0 0 16px;
+    color: #333;
+}
+
+.modal-body .warning {
+    color: #f44336;
+    font-weight: 500;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 0 0 8px 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-secondary {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #d0d0d0;
+}
+
+.btn-danger {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-danger:hover {
+    background-color: #d32f2f;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+.empty-table {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.error-message {
+    text-align: center;
+    padding: 20px;
+    color: #d32f2f;
+    background-color: #ffebee;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+/* Mobile card styles */
+.order-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.order-card-header {
+    background-color: #f5f5f5;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.order-card-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.order-id {
+    font-size: 14px;
+    color: #666;
+}
+
+.order-card-details {
+    padding: 16px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.detail-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.detail-value {
+    color: #333;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .desktop-view {
+        display: none;
+    }
+    
+    .mobile-view {
+        display: block;
+    }
+    
+    .mobile-pagination {
+        margin-top: 16px;
+    }
+}
+
+@media (min-width: 769px) {
+    .desktop-view {
+        display: block;
+    }
+    
+    .mobile-view {
+        display: none;
+    }
+}

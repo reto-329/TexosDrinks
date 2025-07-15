@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Categories Managements</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/notification.css">
+    <link rel="stylesheet" href="/css/categories.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+    <%- include('../partials/csrfProtection') %>
+</head>
+<body>
+    
+    <script src="/scripts/adminShared.js"></script>
+    <%- include('../partials/header3', { admin: admin }) %>
+    <main class="category-main">
+        <div class="category-container">
+            <div class="container">
+                <div class="category-layout">
+                    <!-- Sidebar Navigation -->
+                    <%- include('partials/adminSidebar', { page: 'categories' }) %>
+                    <!-- Main Content -->
+                    <section class="main-content">
+                        <div class="content-header">
+                            <div class="header-content">
+                                <h1>Categories Management</h1>
+                                <button class="add-category-btn d-none-mobile" id="addCategoryBtn" aria-label="Add new category">
+                                    <i class="fas fa-plus"></i> Add Category
+                                </button>
+                            </div>
+                            <button class="add-category-btn d-mobile" id="addCategoryBtnMobile" aria-label="Add new category">
+                                <i class="fas fa-plus"></i> Add Category
+                            </button>
+                            <p class="subtitle">Manage product categories and organization</p>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon bg-primary-light">
+                                    <i class="fas fa-tags text-primary"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>Total Categories</h3>
+                                    <p class="stat-value" id="categoryCountRealtime">--</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon bg-accent-light">
+                                    <i class="fas fa-boxes text-accent"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>Total Products</h3>
+                                    <p class="stat-value" id="productCountRealtime"><%= typeof totalProducts !== 'undefined' ? totalProducts : '--' %></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Popup Modal -->
+                        <div class="category-modal" id="categoryModal" aria-hidden="true">
+                            <div class="modal-overlay" id="modalOverlay"></div>
+                            <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                                <div class="modal-header">
+                                    <h3 id="modalTitle">Add New Category</h3>
+                                    <button class="close-btn" id="closeModalBtn" aria-label="Close modal">
+                                        &times;
+                                    </button>
+                                </div>
+                                <form id="categoryForm" class="category-form">
+                                    <div class="form-group">
+                                        <label for="categoryName">Category Name *</label>
+                                        <input type="text" id="categoryName" name="name" required placeholder="Enter category name" aria-required="true">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="categoryDescription">Description</label>
+                                        <textarea id="categoryDescription" name="description" rows="3" placeholder="Brief description of the category"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="categoryIcon">Icon (Optional)</label>
+                                        <div class="icon-selector" id="iconSelector">
+                                            <div class="icon-option" data-value="fas fa-cocktail"><i class="fas fa-cocktail"></i></div>
+                                            <div class="icon-option" data-value="fas fa-glass-martini-alt"><i class="fas fa-glass-martini-alt"></i></div>
+                                            <div class="icon-option" data-value="fas fa-wine-glass"><i class="fas fa-wine-glass"></i></div>
+                                            <div class="icon-option" data-value="fas fa-beer"><i class="fas fa-beer"></i></div>
+                                            <div class="icon-option" data-value="fas fa-glass-martini"><i class="fas fa-glass-martini"></i></div>
+                                            <div class="icon-option" data-value="fas fa-blender"><i class="fas fa-blender"></i></div>
+                                            <div class="icon-option" data-value="fas fa-glass-whiskey"><i class="fas fa-glass-whiskey"></i></div>
+                                            <div class="icon-option" data-value="fas fa-mug-hot"><i class="fas fa-mug-hot"></i></div>
+                                            <div class="icon-option" data-value="fas fa-bolt"><i class="fas fa-bolt"></i></div>
+                                            <div class="icon-option" data-value="fas fa-wine-glass-alt"><i class="fas fa-wine-glass-alt"></i></div>
+                                            <div class="icon-option" data-value="fas fa-tint"><i class="fas fa-tint"></i></div>
+                                            <div class="icon-option" data-value="fas fa-coffee"><i class="fas fa-coffee"></i></div>
+                                            <div class="icon-option" data-value="fas fa-wine-bottle"><i class="fas fa-wine-bottle"></i></div>
+                                            <div class="icon-option" data-value="fas fa-champagne-glasses"><i class="fas fa-champagne-glasses"></i></div>
+                                        </div>
+                                        <input type="hidden" name="icon" id="selectedIcon">
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
+                                        <button type="submit" class="submit-btn">Add Category</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- End of Popup Modal -->
+
+                        <!-- Edit Category Modal -->
+                        <div class="category-modal" id="editCategoryModal" aria-hidden="true" style="display:none;">
+                            <div class="modal-overlay" id="editModalOverlay"></div>
+                            <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+                                <div class="modal-header">
+                                    <h3 id="editModalTitle">Edit Category</h3>
+                                    <button class="close-btn" id="closeEditModalBtn" aria-label="Close modal">&times;</button>
+                                </div>
+                                <form id="editCategoryForm" class="category-form">
+                                    <input type="hidden" id="editCategoryId" name="id">
+                                    <div class="form-group">
+                                        <label for="editCategoryName">Category Name *</label>
+                                        <input type="text" id="editCategoryName" name="name" required placeholder="Enter category name" aria-required="true">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editCategoryDesc">Description</label>
+                                        <textarea id="editCategoryDesc" name="description" rows="3" placeholder="Brief description of the category"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editCategoryIcon">Icon (Optional)</label>
+                                        <div class="icon-selector" id="editIconSelector">
+                                            <div class="icon-option" data-icon="fas fa-cocktail"><i class="fas fa-cocktail"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-glass-martini-alt"><i class="fas fa-glass-martini-alt"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-wine-glass"><i class="fas fa-wine-glass"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-beer"><i class="fas fa-beer"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-glass-martini"><i class="fas fa-glass-martini"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-blender"><i class="fas fa-blender"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-glass-whiskey"><i class="fas fa-glass-whiskey"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-mug-hot"><i class="fas fa-mug-hot"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-bolt"><i class="fas fa-bolt"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-wine-glass-alt"><i class="fas fa-wine-glass-alt"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-tint"><i class="fas fa-tint"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-coffee"><i class="fas fa-coffee"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-wine-bottle"><i class="fas fa-wine-bottle"></i></div>
+                                            <div class="icon-option" data-icon="fas fa-champagne-glasses"><i class="fas fa-champagne-glasses"></i></div>
+                                        </div>
+                                        <input type="hidden" name="icon" id="editSelectedIcon">
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="button" class="cancel-btn" id="cancelEditBtn">Cancel</button>
+                                        <button type="submit" class="submit-btn">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- End Edit Category Modal -->
+
+                        <!-- Delete Confirmation Modal (smaller & responsive) -->
+                        <div class="category-modal" id="deleteCategoryModal" aria-hidden="true" style="display:none;">
+                            <div class="modal-overlay" id="deleteModalOverlay"></div>
+                            <div class="modal-content delete-modal-content" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+                                <div class="modal-header">
+                                    <h3 id="deleteModalTitle" style="color:#dc2626;font-size:1.1rem;"><i class="fas fa-exclamation-triangle"></i> Confirm Deletion</h3>
+                                    <button class="close-btn" id="closeDeleteModalBtn" aria-label="Close modal">&times;</button>
+                                </div>
+                                <div style="padding:1rem 0; text-align:center;">
+                                    <p style="font-size:1rem; color:#b91c1c; font-weight:600;">Are you sure you want to delete this category?<br> <span style="color:#dc2626;">All products under it will also be deleted.</span></p>
+                                </div>
+                                <div class="form-actions" style="justify-content:center;">
+                                    <button type="button" class="cancel-btn" id="cancelDeleteBtn">Cancel</button>
+                                    <button type="button" class="submit-btn" id="confirmDeleteBtn" style="background:var(--gradient-primary);">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Delete Confirmation Modal -->
+
+                        <!-- Categories Table -->
+                        <div class="category-table-container">
+                            <div class="table-header">
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" placeholder="Search categories..." id="categorySearch">
+                                </div>
+                            </div>
+                            <div class="category-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categoriesTableBody">
+                                        <!-- Categories will be rendered here by categories.js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="table-footer">
+                                <div class="pagination-info">
+                                    <!-- Populated by script -->
+                                </div>
+                                <div class="pagination-controls">
+                                    <!-- Populated by script -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Categories Table -->
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+
+    <!-- Notification Container -->
+    <div id="notification" class="notification" style="display:none;"></div>
+    <script src="/scripts/admin-csrf.js"></script>
+    <script src="/scripts/categories.js"></script>
+</body>
+</html>

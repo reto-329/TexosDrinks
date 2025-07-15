@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Settings</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="stylesheet" href="/css/notification.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+    <%- include('../partials/csrfProtection') %>
+    <style>
+        .settings-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .settings-card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        .settings-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .settings-card-header .icon {
+            margin-right: 10px;
+            color: #dc2626;
+            font-size: 20px;
+        }
+        .settings-card-body {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .form-group .help-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .btn-primary {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover {
+            background: #b91c1c;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .alert-danger {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+    </style>
+</head>
+<body>
+    <script src="/scripts/adminShared.js"></script>
+    <%- include('../partials/header3', { admin: user || {} }) %>
+    <main class="dashboard-main">
+        <div class="dashboard-container">
+            <div class="container">
+                <div class="dashboard-layout">
+                    <!-- Sidebar Navigation -->
+                    <%- include('partials/adminSidebar', { page: 'settings' }) %>
+                    <!-- Main Content -->
+                    <section class="dashboard-content">
+                        <div class="content-header">
+                            <h2>System Settings</h2>
+                            <p>Configure system-wide settings</p>
+                        </div>
+
+                        <% if (success && success.length > 0) { %>
+                            <div class="alert alert-success">
+                                <%= success %>
+                            </div>
+                        <% } %>
+
+                        <% if (error && error.length > 0) { %>
+                            <div class="alert alert-danger">
+                                <%= error %>
+                            </div>
+                        <% } %>
+
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <i class="fas fa-truck icon"></i>
+                                <h3>Delivery Settings</h3>
+                            </div>
+                            <div class="settings-card-body">
+                                <form action="/admin/settings" method="POST">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    
+                                    <div class="form-group">
+                                        <label for="FREE_DELIVERY_THRESHOLD">Free Delivery Threshold (₦)</label>
+                                        <input 
+                                            type="number" 
+                                            id="FREE_DELIVERY_THRESHOLD" 
+                                            name="FREE_DELIVERY_THRESHOLD" 
+                                            value="<%= settings.find(s => s.key === 'FREE_DELIVERY_THRESHOLD')?.value || '100000' %>"
+                                            required
+                                        >
+                                        <div class="help-text">Orders above this amount qualify for free delivery</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="DELIVERY_FEE">Standard Delivery Fee (₦)</label>
+                                        <input 
+                                            type="number" 
+                                            id="DELIVERY_FEE" 
+                                            name="DELIVERY_FEE" 
+                                            value="<%= settings.find(s => s.key === 'DELIVERY_FEE')?.value || '0' %>"
+                                            required
+                                        >
+                                        <div class="help-text">Fee charged for delivery when order is below the threshold</div>
+                                    </div>
+
+                                    <button type="submit" class="btn-primary">
+                                        <i class="fas fa-save"></i> Save Settings
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+    <script src="/scripts/admin-csrf.js"></script>
+    <script src="/scripts/admin-settings.js"></script>
+</body>
+</html>

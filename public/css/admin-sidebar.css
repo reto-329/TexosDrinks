@@ -1,0 +1,317 @@
+/* Admin Sidebar Styles */
+:root {
+    --primary-color: #dc2626;
+    --primary-hover: #b91c1c;
+    --primary-light: #fef2f2;
+    --accent-color: #f9c411;
+    --accent-hover: #f59e0b;
+    --text-dark: #111827;
+    --text-medium: #374151;
+    --text-light: #6b7280;
+    --border-color: #e5e7eb;
+    --bg-light: #f8fafc;
+    --white: #ffffff;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    --gradient-accent: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+}
+
+.menu-panel-sidebar {
+    background: var(--white);
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    padding: 0;
+    position: sticky;
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.sidebar-header {
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sidebar-header i {
+    color: var(--primary-color);
+}
+
+.sidebar-nav {
+    padding: 1rem 0;
+}
+
+.nav-section {
+    margin-bottom: 1.5rem;
+}
+
+.nav-section h4 {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.75rem 0;
+    padding: 0 2rem;
+}
+
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    margin-bottom: 0.25rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 2rem;
+    color: var(--text-medium);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+    position: relative;
+}
+
+.nav-link:hover {
+    background: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.nav-link.active,
+.nav-item.active .nav-link {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.nav-item.active .nav-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--gradient-primary);
+    border-radius: 0 2px 2px 0;
+}
+
+.nav-link i {
+    width: 20px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.nav-badge {
+    background: var(--gradient-primary);
+    color: var(--white);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    border-radius: 50px;
+    margin-left: auto;
+    min-width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 1rem 2rem 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.logout-btn {
+    width: 100%;
+    background: var(--gradient-primary);
+    color: var(--white);
+    border: none;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+    font-size: 0.9375rem;
+}
+
+.logout-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+/* Updated Hamburger Button Styles */
+.mobile-menu-toggle {
+    display: none !important;
+    position: fixed;
+    top: 50%;
+    left: 1.5rem;
+    transform: translateY(-50%);
+    z-index: 1202;
+    background: var(--gradient-accent);
+    color: var(--white);
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.mobile-menu-toggle:focus {
+    outline: 2px solid var(--accent-color); /* Updated line */
+}
+
+/* Close Button Styles */
+.sidebar-close-btn {
+    display: none;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--gradient-accent);
+    color: var(--white);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    cursor: pointer;
+    z-index: 1201;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.menu-panel-sidebar.active .sidebar-close-btn {
+    display: flex;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    .mobile-menu-toggle {
+        display: flex !important;
+    }
+    
+    .menu-panel-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 280px;
+        max-width: 90%;
+        border-radius: 0;
+        box-shadow: var(--shadow-lg);
+        z-index: 1100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        max-height: 100vh;
+        padding-top: 0;
+        opacity: 0;
+    }
+    
+    .menu-panel-sidebar.active {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    
+    /* Hide toggle when sidebar is open */
+    .menu-panel-sidebar.active ~ .mobile-menu-toggle,
+    .sidebar-open .mobile-menu-toggle {
+        display: none !important;
+    }
+    
+    /* Overlay for background */
+    body.sidebar-open::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.5);
+        z-index: 1099;
+        -webkit-backdrop-filter: blur(2px);
+        backdrop-filter: blur(2px);
+        transition: opacity 0.3s ease;
+    }
+    
+    /* Disable scrolling when sidebar is open */
+    body.sidebar-open {
+        overflow: hidden;
+    }
+}
+
+@media (max-width: 768px) {
+    .menu-panel-sidebar {
+        width: 85vw;
+    }
+}
+
+@media (max-width: 640px) {
+    .mobile-menu-toggle {
+        width: 42px;
+        height: 42px;
+        font-size: 1.25rem;
+        left: 1rem;
+    }
+    
+    .sidebar-header {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+    
+    .sidebar-footer {
+        padding: 1rem 1.5rem 1.5rem;
+    }
+    
+    .nav-link {
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .nav-section h4 {
+        padding: 0 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-menu-toggle {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+    }
+    
+    .sidebar-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .nav-link {
+        font-size: 0.9rem;
+    }
+    
+    .logout-btn {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+}

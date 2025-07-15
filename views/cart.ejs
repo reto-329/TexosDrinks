@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Cart</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/cart.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/header2.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+    <meta name="user-logged-in" content="<%= user ? 'true' : 'false' %>">
+</head>
+<body>
+    <%- include('partials/headerSelector') %>
+
+    <main class="cart-page">
+        <div class="container">
+            <div class="cart-layout">
+                <% if (!user) { %>
+                    <!-- Guest Cart -->
+                    <div class="cart-section">
+                        <h1 class="cart-title">Your Cart (<span id="guestCartCount">0</span>)</h1>
+                        <div id="local-cart" class="cart-items">
+                            <!-- Local cart items will be populated by JavaScript -->
+                        </div>
+                        <div class="guest-notice">
+                            <i class="fas fa-info-circle"></i>
+                            <span>You're shopping as a guest. <a href="/login" class="details-link">Sign in</a> to save your cart.</span>
+                        </div>
+                    </div>
+
+                    <div class="cart-summary">
+                        <h3>ORDER SUMMARY</h3>
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="guestSubtotal">₦0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery Fee</span>
+                            <span id="guestDeliveryFee">₦0</span>
+                        </div>
+                        <div class="summary-row" style="margin-top: 1.5rem;">
+                            <span>Total</span>
+                            <span id="guestTotal" style="font-size: 1.25rem; color: var(--primary);">₦0</span>
+                        </div>
+                        
+                        <div id="guestDeliveryProgress" style="display: none;">
+                            <div class="progress-bar" style="height: 6px; background: var(--light-gray); border-radius: 3px; margin: 1rem 0;">
+                                <div id="guestProgressFill" class="progress-fill" style="height: 100%; background: var(--primary); border-radius: 3px; width: 0%;"></div>
+                            </div>
+                            <p id="guestDeliveryMessage" class="delivery-note" style="text-align: center; margin-top: 0.5rem;"></p>
+                        </div>
+                        
+                        <a href="/login" class="checkout-btn">
+                            Proceed to Checkout
+                        </a>
+                        <div class="returns-info">
+                            <strong><i class="fas fa-shield-alt"></i> Safe & Secure Checkout</strong>
+                            <p>Free returns within 7 days for eligible items</p>
+                            <a href="/shipping-info" class="details-link">Delivery information</a>
+                        </div>
+                    </div>
+
+                <% } else if (cart && cart.items.length > 0) { %>
+                    <!-- User Cart with Items -->
+                    <div class="cart-section">
+                        <h1 class="cart-title">Your Cart (<%= cart.items.length %>)</h1>
+                        <div class="cart-items">
+                            <% cart.items.forEach(item => { %>
+                                <div class="cart-item" data-item-id="<%= item.id %>">
+                                    <div class="item-image">
+                                        <img src="<%= item.image_url || '/Images/product-placeholder.jpg' %>" alt="<%= item.name %>">
+                                    </div>
+                                    <div class="item-details">
+                                        <h3 class="item-name"><%= item.name %></h3>
+                                        <div class="item-meta">
+                                            <span class="seller">Category: <%= item.category_name %></span>
+                                            <% if (item.description) { %>
+                                                <p class="item-description" style="font-size: 0.875rem; color: var(--gray); margin-top: 0.25rem;">
+                                                    <%= item.description.substring(0, 50) %>...
+                                                </p>
+                                            <% } %>
+                                        </div>
+                                        <% if (item.stock < 5) { %>
+                                            <div class="stock-warning">
+                                                <i class="fas fa-exclamation-circle"></i> Only <%= item.stock %> left in stock
+                                            </div>
+                                        <% } %>
+                                        <div class="item-actions">
+                                            <button class="remove-btn" onclick="removeFromCart('<%= item.product_id %>')">
+                                                <i class="fas fa-trash"></i> Remove
+                                            </button>
+                                            <div class="quantity-controls">
+                                                <button class="qty-btn" onclick="updateQuantity('<%= item.product_id %>', <%= item.quantity - 1 %>)" 
+                                                    <%= item.quantity <= 1 ? 'disabled' : '' %>>
+                                                    -
+                                                </button>
+                                                <span class="qty-display"><%= item.quantity %></span>
+                                                <button class="qty-btn" onclick="updateQuantity('<%= item.product_id %>', <%= item.quantity + 1 %>)"
+                                                    <%= item.quantity >= item.stock ? 'disabled' : '' %>>
+                                                    +
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="item-price">
+                                        <div class="current-price">₦<%= (item.price * item.quantity).toLocaleString() %></div>
+                                        <div class="price-per-unit" style="font-size: 0.75rem; color: var(--gray);">
+                                            ₦<%= item.price.toLocaleString() %> per unit
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                        
+                        <div style="margin-top: 2rem; display: flex; justify-content: space-between;">
+                            <a href="/products" class="shop-btn" style="background: var(--light-gray); color: var(--dark);">
+                                <i class="fas fa-arrow-left"></i> Continue Shopping
+                            </a>
+                            <button class="shop-btn" onclick="showClearCartConfirmation()" style="background: var(--light-gray); color: var(--primary);">
+                                <i class="fas fa-trash"></i> Clear Cart
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="cart-summary">
+                        <h3>ORDER SUMMARY</h3>
+                        <div class="summary-row">
+                            <span>Subtotal (<%= cart.items.reduce((acc, item) => acc + item.quantity, 0) %> items)</span>
+                            <span>₦<%= cart.subtotal.toLocaleString() %></span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery Fee</span>
+                            <span><%= cart.deliveryFee === 0 ? 'FREE' : `₦${cart.deliveryFee.toLocaleString()}` %></span>
+                        </div>
+                        
+                        <% if (cart.freeDeliveryProgress < 1) { %>
+                            <div class="delivery-progress" style="margin: 1rem 0;">
+                                <div class="progress-bar" style="height: 6px; background: var(--light-gray); border-radius: 3px;">
+                                    <div class="progress-fill" style="height: 100%; background: var(--primary); border-radius: 3px; width: '<%= (cart.freeDeliveryProgress * 100) %>%';"></div>
+                                </div>
+                                <p class="delivery-note" style="text-align: center; margin-top: 0.5rem;">
+                                    Spend ₦<%= (FREE_DELIVERY_THRESHOLD - cart.subtotal).toLocaleString() %> more for <strong>FREE delivery</strong>
+                                </p>
+                            </div>
+                        <% } else { %>
+                            <p class="delivery-note" style="color: var(--success); text-align: center;">
+                                <i class="fas fa-check-circle"></i> You've qualified for FREE delivery!
+                            </p>
+                        <% } %>
+                        
+                        <div class="summary-row" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                            <span style="font-weight: 700;">Total</span>
+                            <span style="font-size: 1.25rem; color: var(--primary); font-weight: 700;">₦<%= cart.total.toLocaleString() %></span>
+                        </div>
+                        
+                        <a href="/checkout" class="checkout-btn">
+                            <i class="fas fa-lock"></i> Proceed to Checkout with Paystack
+                        </a>
+                        
+                        <div class="returns-info">
+                            <strong><i class="fas fa-shield-alt"></i> Safe & Secure Checkout</strong>
+                            <p>Payment information is encrypted and secure</p>
+                            <div class="payment-methods">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" class="payment-icon">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" class="payment-icon">
+                            </div>
+                            <p>Free returns within 7 days for eligible items</p>
+                            <a href="/shipping-info" class="details-link">Delivery information</a>
+
+                        </div>
+                    </div>
+
+                <% } else { %>
+                    <!-- Empty Cart -->
+                    <div class="empty-cart">
+                        <div class="empty-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h2>Your cart is empty</h2>
+                        <p>Looks like you haven't added anything to your cart yet</p>
+                        <a href="/products" class="shop-btn">
+                            <i class="fas fa-store"></i> Browse Products
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+    
+    <!-- Clear Cart Confirmation Modal (placed at the end of body for proper stacking) -->
+    <div class="modal-overlay" id="clearCartModal">
+        <div class="modal" role="dialog" aria-labelledby="clearCartModalTitle">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3 id="clearCartModalTitle">Confirm Clear Cart</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to clear your entire cart? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="hideClearCartConfirmation()">No, Keep Items</button>
+                <button class="modal-btn modal-btn-confirm" onclick="confirmClearCart()">Yes, Clear Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/scripts/cart-functions.js"></script>
+    <script src="/scripts/cart.js"></script>
+    <script src="/scripts/addToCart.js"></script>
+    <script src="/scripts/guestCart.js"></script>
+    <script src="/scripts/loggedInCart.js"></script>
+    
+    <script>
+        // Clear cart confirmation functions
+        function showClearCartConfirmation() {
+            document.getElementById('clearCartModal').classList.add('active');
+            // Prevent body scrolling when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function hideClearCartConfirmation() {
+            document.getElementById('clearCartModal').classList.remove('active');
+            // Restore body scrolling
+            document.body.style.overflow = '';
+        }
+        
+        function confirmClearCart() {
+            // Show loading state
+            const confirmBtn = document.querySelector('.modal-btn-confirm');
+            const originalText = confirmBtn.innerHTML;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Clearing...';
+            confirmBtn.disabled = true;
+            
+            // Call the actual clear cart function
+            clearCart()
+                .then(() => {
+                    // Hide the modal on success
+                    hideClearCartConfirmation();
+                })
+                .catch(error => {
+                    console.error('Error clearing cart:', error);
+                    // Restore button state on error
+                    confirmBtn.innerHTML = originalText;
+                    confirmBtn.disabled = false;
+                });
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('clearCartModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                hideClearCartConfirmation();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && document.getElementById('clearCartModal').classList.contains('active')) {
+                hideClearCartConfirmation();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Products Managements</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/adminproduct.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+</head>
+<body>
+    <%- include('../partials/header3', { admin: admin }) %>
+    <main class="admin-products">
+        <div class="container">
+            <div class="admin-layout">
+                <%- include('partials/adminSidebar', { page: 'products' }) %>
+                <section class="main-content">
+                    <div class="content-header">
+                        <div class="header-flex">
+                            <div>
+                                <h1>Categories Products</h1>
+                                <p class="subtitle">Add products under each category</p>
+                            </div>
+                        </div>
+                        <div class="search-filter">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Search categories..." id="categorySearch">
+                            </div>
+                            <div class="filter-dropdown">
+                                <select id="sortCategories">
+                                    <option value="name-asc">Sort by: Name (A-Z)</option>
+                                    <option value="name-desc">Sort by: Name (Z-A)</option>
+                                    <option value="products-asc">Sort by: Fewest Products</option>
+                                    <option value="products-desc">Sort by: Most Products</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-grid" id="categoryGrid">
+                        <% if (categories && categories.length) { %>
+                            <!-- This will be dynamically populated by the script -->
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open empty-image" style="font-size: 64px; color: #ccc;"></i>
+                                <h3>No Categories Found</h3>
+                                <p>Get started by creating your first product category</p>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div id="paginationContainer" class="pagination-container"></div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Add Product Modal -->
+        <div id="productModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add Product to <span id="modalCategoryName"></span></h3>
+                    <button class="close-modal" onclick="closeModal()" aria-label="Close modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProductForm" onsubmit="handleAddProduct(event)">
+                        <input type="hidden" id="modalCategoryId" name="category_id">
+                        <div class="form-group">
+                            <label class="form-label">Product Name</label>
+                            <input type="text" name="name" class="form-control" required placeholder="Enter product name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="3" required placeholder="Enter product description"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Price (₦)</label>
+                                <input type="number" name="price" step="0.01" class="form-control" required placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stock Quantity</label>
+                                <input type="number" name="stock" class="form-control" required placeholder="0" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-checkbox">
+                                <input type="checkbox" name="is_new">
+                                <span>Mark as New Arrival</span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Product Image</label>
+                            <div class="file-upload-wrapper">
+                                <label class="file-upload-label">
+                                    <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
+                                    <span class="file-upload-text">Drag & drop image or click to browse</span>
+                                    <span class="file-upload-hint">Supports JPG, PNG (Max 5MB)</span>
+                                    <input type="file" name="image" class="file-upload-input" accept="image/*" required>
+                                </label>
+                                <div class="file-upload-preview" id="imagePreview"></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button type="submit" class="btn-primary" id="submitProductBtn">Add Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Pass categories data to the script
+        window.categoriesData = <%- JSON.stringify(categories || []) %>;
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
+        }
+
+        // Form submission handler
+        async function handleAddProduct(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const submitBtn = document.getElementById('submitProductBtn');
+            
+            // Basic validation
+            if (!formData.get('name') || !formData.get('name').trim()) {
+                showNotification('Product name is required', 'error');
+                return;
+            }
+            
+            if (!formData.get('price') || isNaN(parseFloat(formData.get('price')))) {
+                showNotification('Please enter a valid price', 'error');
+                return;
+            }
+            
+            if (!formData.get('category_id')) {
+                showNotification('Category is required', 'error');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+                
+                const response = await fetch('/api/products/productCreate', {   // Changed to /api/admin
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'include'  // Important for cookies/session
+                });
+                
+                // Check if response is OK (status 200-299)
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to add product');
+                }
+                
+                const result = await response.json();
+                showNotification('Product added successfully!', 'success');
+                // closeModal is defined in adminProduct.js
+                closeModal();
+                setTimeout(() => window.location.reload(), 1500);
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(error.message || 'Network error. Please try again.', 'error');
+                
+                // Additional error logging
+                if (error instanceof TypeError) {
+                    console.error('This is likely a network error:', error);
+                }
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Add Product';
+            }
+        }
+    </script>
+
+    <script src="/scripts/adminProduct.js"></script>
+</body>
+</html>

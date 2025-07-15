@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Dashboard</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/header2.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/payment-methods.css">
+    <link rel="icon" type="image/png" href="Images/logo1.png" sizes="256x256">
+    <script src="scripts/sidebar.js" defer></script>
+</head>
+<body>
+    <%- include('partials/headerSelector', { user: user || null }) %>
+    
+    <main class="dashboard-main">
+        <!-- Welcome Banner -->
+        <div class="dashboard-banner">
+            <div class="container">
+                <div class="banner-content">
+                    <div class="welcome-section">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="welcome-text">
+                            <h1>Welcome back, <span class="user-name"><%= user ? user.username : 'User' %></span>!</h1>
+                            <p>Manage your account, track orders, and discover new beverages</p>
+                        </div>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number"><%= orderCount %></span>
+                                <span class="stat-label">Total Orders</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="container">
+                <div class="dashboard-layout">
+                    <!-- Sidebar Navigation -->
+                    <%- include('partials/sidebar', { activePage: 'dashboard', user: user, ordersCount: orderCount }) %>
+
+                    <!-- Main Content -->
+                    <section class="dashboard-content">
+                        <div class="content-header">
+                            <h2>Account Overview</h2>
+                            <p>Manage your personal information and account preferences</p>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="quick-actions">
+                            <a href="/product" class="action-btn primary">
+                                <i class="fas fa-plus"></i>
+                                <span>New Order</span>
+                            </a>
+                            <a href="/settings" class="action-btn secondary">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </a>
+                            <button class="action-btn secondary">
+                                <i class="fas fa-download"></i>
+                                <span>Download Data</span>
+                            </button>
+                        </div>
+
+                        <!-- Dashboard Cards -->
+                        <div class="dashboard-grid">
+                            <div class="dashboard-card account-details">
+                                <div class="card-header">
+                                    <div class="card-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="card-title">
+                                        <h4>Account Details</h4>
+                                        <p>Your personal information</p>
+                                    </div>
+                                </div>
+                                <div class="card-content">
+                                    <div class="info-row">
+                                        <span class="info-label">Username</span>
+                                        <span class="info-value"><%= user ? user.username : 'Not provided' %></span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Email</span>
+                                        <span class="info-value"><%= user ? user.email : 'Not provided' %></span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Phone</span>
+                                        <span class="info-value"><%= user ? user.phonenumber || 'Not provided' : 'Not provided' %></span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Member Since</span>
+                                        <span class="info-value">January 2024</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dashboard-card address-book">
+                                <div class="card-header">
+                                    <div class="card-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="card-title">
+                                        <h4>Default Address</h4>
+                                        <p>Your shipping address</p>
+                                    </div>
+                                    <a href="/address-book" class="card-action">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                                <div class="card-content">
+                                    <% if (defaultAddress) { %>
+                                        <div class="default-address-info">
+                                            <div class="address-name"><%= defaultAddress.first_name %> <%= defaultAddress.last_name %></div>
+                                            <div class="address-details">
+                                                <%= defaultAddress.street %><% if (defaultAddress.additional_info) { %>, <%= defaultAddress.additional_info %><% } %>
+                                            </div>
+                                            <div class="address-location">
+                                                <%= defaultAddress.city %>, <%= defaultAddress.state %>, <%= defaultAddress.country %>
+                                            </div>
+                                            <div class="address-phone">+234 <%= defaultAddress.phone %></div>
+                                        </div>
+                                    <% } else { %>
+                                        <div class="address-placeholder">
+                                            <i class="fas fa-home"></i>
+                                            <p>No default address set</p>
+                                            <a href="/address-book" class="add-address-btn">Add Address</a>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <!-- Payment Methods Card -->
+                            <div class="dashboard-card payment-methods">
+                                <div class="card-header">
+                                    <div class="card-icon">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <div class="card-title">
+                                        <h4>Payment Methods</h4>
+                                        <p>Secure payment options</p>
+                                    </div>
+                                </div>
+                                <div class="card-content">
+                                    <div class="payment-method">
+                                        <div class="payment-icon">
+                                            <i class="fas fa-credit-card"></i>
+                                        </div>
+                                        <div class="payment-details">
+                                            <div class="payment-name">Paystack</div>
+                                            <div class="payment-description">Pay securely with your credit/debit card</div>
+                                        </div>
+                                        <div class="payment-status active">
+                                            <span class="payment-status-badge">Active</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Activity Card -->
+                            <div class="dashboard-card recent-activity full-width">
+                                <div class="card-header">
+                                    <div class="card-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="card-title">
+                                        <h4>Recent Activity</h4>
+                                        <p>Your latest actions</p>
+                                    </div>
+                                    <a href="#" class="view-all-link">View All</a>
+                                </div>
+                                <div class="card-content">
+                                    <div class="activity-list">
+                                        <div class="activity-item">
+                                            <div class="activity-icon">
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </div>
+                                            <div class="activity-details">
+                                                <p class="activity-title">Order #TX-2024-001 placed</p>
+                                                <p class="activity-time">2 hours ago</p>
+                                            </div>
+                                            <div class="activity-status">
+                                                <span class="status-badge processing">Processing</span>
+                                            </div>
+                                        </div>
+                                        <div class="activity-item">
+                                            <div class="activity-icon">
+                                                <i class="fas fa-heart"></i>
+                                            </div>
+                                            <div class="activity-details">
+                                                <p class="activity-title">Added Energy Boost to wishlist</p>
+                                                <p class="activity-time">1 day ago</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        function logoutFromDashboard() {
+            fetch('/api/users/logout', {
+                method: 'POST',
+                credentials: 'same-origin'
+            })
+            .then(() => {
+                showLogoutNotification('/');
+            });
+        }
+        
+        function showLogoutNotification(redirectUrl) {
+            let notification = document.createElement('div');
+            notification.className = 'logout-notification';
+            notification.textContent = 'You have been logged out.';
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+                window.location.href = redirectUrl;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

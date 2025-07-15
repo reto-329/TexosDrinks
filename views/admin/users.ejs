@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Users Management</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/admin-orders.css">
+    <link rel="stylesheet" href="/css/admin-users.css">
+    <link rel="stylesheet" href="/css/pagination.css">
+    <link rel="stylesheet" href="/css/admin-orders-responsive.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+    <%- include('../partials/csrfProtection') %>
+</head>
+<body>
+    <%- include('../partials/header3', { admin: admin }) %>
+    
+    <div class="admin-layout">
+        <%- include('partials/adminSidebar', { page: 'users' }) %>
+        
+        <main class="admin-main">
+            <div class="admin-content">
+                <div class="content-header">
+                    <h1>User Management</h1>
+                    <p>View and manage registered users</p>
+                </div>
+                
+                <!-- Desktop view (table) -->
+                <div class="table-container desktop-view">
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>Registration Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be loaded here via JavaScript -->
+                        </tbody>
+                    </table>
+                    <div id="paginationContainer" class="pagination-container"></div>
+                </div>
+                
+                <!-- Mobile view (cards) -->
+                <div class="mobile-view" id="userCardContainer">
+                    <!-- User cards will be loaded here via JavaScript -->
+                </div>
+                
+                <!-- Pagination for mobile -->
+                <div id="mobilePaginationContainer" class="pagination-container mobile-pagination"></div>
+                
+                <!-- Delete confirmation modal -->
+                <div id="deleteModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Confirm Delete</h2>
+                            <span class="close-modal">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+                            <p class="warning">Warning: This will delete all user data including addresses and cart items.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="cancelDelete" class="btn-secondary">Cancel</button>
+                            <button id="confirmDelete" class="btn-danger">Delete User</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="/scripts/admin-users.js"></script>
+    
+    <script src="/scripts/admin-csrf.js"></script>
+    <%- include('../partials/footer') %>
+</body>
+</html>

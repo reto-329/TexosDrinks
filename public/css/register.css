@@ -1,0 +1,80 @@
+/* Register page specific styles - extends login.css */
+
+/* .register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+} */
+/* 
+.register-form > .floating-label-group,
+.register-form > .password-floating-label-group {
+  margin-bottom: 0;
+} */
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.join-yellow {
+  color: #f9c411 !important;
+}
+
+.auth-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.10), 0 1px 4px 0 rgba(220,38,38,0.06);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.auth-card-header {
+  background-color: #fff3c4;
+  border-bottom: 1px solid var(--border-color);
+  padding: 1.75rem 1.5rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Show Password Toggle Button Styling */
+.show-password-toggle {
+    position: absolute;
+    right: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    color: #bdbdbd;
+    font-size: 1.2rem;
+    z-index: 2;
+    transition: color 0.2s;
+}
+.show-password-toggle:focus {
+    color: #ffb300;
+    outline: none;
+    box-shadow: none;
+}
+.show-password-toggle:hover {
+    color: #ffb300;
+}
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.password-input-container .form-input {
+    padding-right: 2.5rem;
+}

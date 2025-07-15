@@ -1,0 +1,52 @@
+/* Custom Paystack Styling */
+
+/* Override Paystack iframe styles */
+iframe.paystack-iframe {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  height: 600px !important;
+  min-height: 600px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Style the Paystack modal container */
+.paystack-overlay {
+  background: rgba(0, 0, 0, 0.7) !important;
+}
+
+.paystack-container {
+  width: 500px !important;
+  max-width: 90% !important;
+  height: auto !important;
+  min-height: 600px !important;
+}
+
+/* Style the Paystack close button */
+.paystack-close-btn {
+  background: #fff !important;
+  color: #333 !important;
+  border-radius: 50% !important;
+  width: 40px !important;
+  height: 40px !important;
+  font-size: 20px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Ensure the Paystack modal is centered */
+.paystack-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Add animation to the Paystack modal */
+@keyframes paystackFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.paystack-container {
+  animation: paystackFadeIn 0.3s ease-out !important;
+}

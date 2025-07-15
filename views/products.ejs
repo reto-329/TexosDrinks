@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Products</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/products.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/header2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+    <meta name="user-logged-in" content="<%= user ? 'true' : 'false' %>">
+</head>
+<body>
+    <%- include('partials/headerSelector', { user: user || null }) %>
+    
+    <main class="products-page">
+        <div class="container">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <div class="hero-content">
+                    <nav class="breadcrumbs">
+                        <a href="/">
+                            <i class="fas fa-home"></i>
+                            Home
+                        </a>
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Products</span>
+                    </nav>
+                    
+                    <div class="products-header">
+                        <h1 class="products-title">
+                            DISCOVER OUR <span class="title-accent">PREMIUM DRINKS</span>
+                        </h1>
+                        <p class="products-description">
+                            Explore our carefully curated collection of refreshing beverages crafted for every taste and occasion
+                        </p>
+                        <div class="stats-row">
+                            <div class="stat-item">
+                                <span class="stat-number"><%= stats ? stats.totalProducts : 0 %></span>
+                                <span class="stat-label">Products</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number"><%= stats ? stats.categories : 0 %></span>
+                                <span class="stat-label">Categories</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-decoration">
+                    <div class="floating-element element-1"></div>
+                    <div class="floating-element element-2"></div>
+                    <div class="floating-element element-3"></div>
+                </div>
+            </div>
+
+            <!-- Enhanced Filters -->
+            <div class="filters-section">
+                <div class="filters-container">
+                    <div class="search-container">
+                        <div class="search-wrapper">
+                            <i class="fas fa-search search-icon"></i>
+                            <input id="searchInput" class="search-input" type="text" placeholder="Search products..." value="<%= query && query.search ? query.search : '' %>" />
+                        </div>
+                    </div>
+                    
+                    <button class="filter-toggle-btn" id="filterToggleButton">
+                        <i class="fas fa-filter"></i>
+                        <span>Filters</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </button>
+                    
+                    <div class="collapsible-filters" id="collapsibleFilters">
+                        <div class="filter-group">
+                            <label for="categorySelect" class="filter-label">
+                                <i class="fas fa-tags"></i> Category
+                            </label>
+                            <select class="filter-select" id="categorySelect">
+                                <option value="all">All Categories</option>
+                                <% if (categories && categories.length) { categories.forEach(function(cat) { %>
+                                    <option value="<%= cat.id %>" <%= query && query.category === cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                                <% }) } %>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="sortSelect" class="filter-label">
+                                <i class="fas fa-sort"></i> Sort By
+                            </label>
+                            <select class="filter-select" id="sortSelect">
+                                <option value="name" <%= query && query.sort === 'name' ? 'selected' : '' %>>Name (A-Z)</option>
+                                <option value="priceLow" <%= query && query.sort === 'priceLow' ? 'selected' : '' %>>Price: Low to High</option>
+                                <option value="priceHigh" <%= query && query.sort === 'priceHigh' ? 'selected' : '' %>>Price: High to Low</option>
+                                <option value="newest" <%= query && query.sort === 'newest' ? 'selected' : '' %>>Newest</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="priceRange" class="filter-label">
+                                <i class="fas fa-money-bill-wave"></i> Max Price
+                            </label>
+                            <div class="price-range-container">
+                                <input type="range" min="0" max="5000" step="50" id="priceRange" class="price-slider" value="<%= query && query.price ? query.price : 5000 %>" />
+                                <span class="price-display" id="priceValue">₦<%= query && query.price ? query.price : 5000 %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results and View Toggle -->
+            <div class="results-section">
+                <div class="results-info">
+                    <p class="results-text" id="resultsCount">
+                        <span class="results-number"><%= totalProducts %></span> products found
+                    </p>
+                    <div class="active-filters" id="activeFilters"></div>
+                </div>
+                
+                <div class="view-controls">
+                    <div class="view-toggle">
+                        <button class="view-btn active" id="gridViewBtn" aria-label="Grid view" title="Grid View">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" id="listViewBtn" aria-label="List view" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List View Header (only visible in list view) -->
+            <div class="products-list-header" id="productsListHeader" style="display: none;">
+                <div class="header-cell">Product</div>
+                <div class="header-cell">Price</div>
+                <div class="header-cell">Status</div>
+                <div class="header-cell">Action</div>
+            </div>
+
+            <!-- Products Grid/List Container -->
+            <div class="products-container">
+                <div class="products-grid grid-view" id="productsGrid">
+                    <% if (products && products.length > 0) { %>
+                        <% products.forEach(function(product) { %>
+                            <div class="product-card <%= !product.inStock ? 'out-of-stock' : '' %>"
+                                data-product-id="<%= product.id %>"
+                                data-product-name="<%= product.name %>"
+                                data-product-price="<%= product.price %>"
+                                data-product-image="<%= product.image_url %>"
+                                data-product-stock="<%= product.stock || product.stockCount || 0 %>">
+                                <div class="product-image-container">
+                                    <img class="product-image" src="<%= product.image_url || '/Images/logo1.png' %>" alt="<%= product.name %>" />
+                                    <div class="product-badges">
+                                        <% if (product.is_new) { %><span class="product-badge new">New</span><% } %>
+                                        <% if (product.isOrganic) { %><span class="product-badge organic">Organic</span><% } %>
+                                        <% if (!product.inStock) { %><span class="product-badge out-of-stock">Out of Stock</span><% } %>
+                                    </div>
+                                    <div class="product-overlay">
+                                        <!-- Wishlist button removed -->
+                                    </div>
+                                </div>
+                                <div class="product-content">
+                                    <div class="product-header">
+                                        <div class="product-name"><a href="/products/<%= product.id %>"><%= product.name %></a></div>
+                                        
+                                    </div>
+                                    <div class="product-meta">
+                                        <span class="product-category"><%= product.categoryName %></span>
+                                        <span class="product-size"><%= product.size || '' %></span>
+                                    </div>
+                                    <div class="product-footer">
+                                        <div class="price-section">
+                                            <span class="current-price">₦<%= Number(product.price).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
+                                            <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                                                <span class="original-price">₦<%= Number(product.originalPrice).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
+                                                <span class="discount">-<%= Math.round(100 * (product.originalPrice - product.price) / product.originalPrice) %>%</span>
+                                            <% } %>
+                                        </div>
+                                        <div class="product-actions">
+                                            <% if (product.inStock) { %>
+                                                <button class="add-to-cart-btn" data-product-id="<%= product.id %>"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                                            <% } else { %>
+                                                <button class="notify-btn" onclick="notifyWhenAvailable('<%= product.id %>', this)"><i class="fas fa-bell"></i> Notify Me</button>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-products">
+                            <div class="no-products-icon"><i class="fas fa-box-open"></i></div>
+                            <div class="no-products-title">No products found</div>
+                            <div class="no-products-description">Try adjusting your filters or search for something else.</div>
+                        </div>
+                    <% } %>
+                </div>
+                <!-- List View -->
+                <div class="products-list list-view" id="productsList" style="display:none;">
+                    <% if (products && products.length > 0) { %>
+                        <% products.forEach(function(product) { %>
+                            <div class="product-list-item <%= !product.inStock ? 'out-of-stock' : '' %>"
+                                data-product-id="<%= product.id %>"
+                                data-product-name="<%= product.name %>"
+                                data-product-price="<%= product.price %>"
+                                data-product-image="<%= product.image_url %>"
+                                data-product-stock="<%= product.stock || product.stockCount || 0 %>">
+                                <div class="list-image">
+                                    <img src="<%= product.image_url || '/Images/logo1.png' %>" alt="<%= product.name %>" />
+                                </div>
+                                <div class="list-details">
+                                    <div class="list-title-row">
+                                        <a class="list-product-name" href="/products/<%= product.id %>"><%= product.name %></a>
+                                        <% if (product.is_new) { %><span class="list-badge new">New</span><% } %>
+                                        <% if (!product.inStock) { %><span class="list-badge out-of-stock">Out of Stock</span><% } %>
+                                    </div>
+                                    <div class="list-meta">
+                                        <span class="list-category"><i class="fas fa-tags"></i> <%= product.categoryName %></span>
+                                    </div>
+                                    <div class="list-description">
+                                        <%= product.description ? product.description.substring(0, 120) + (product.description.length > 120 ? '...' : '') : 'No description available.' %>
+                                    </div>
+                                </div>
+                                <div class="list-price-action">
+                                    <div class="list-price">
+                                        <span class="current-price">₦<%= Number(product.price).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
+                                        <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                                            <span class="original-price">₦<%= Number(product.originalPrice).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
+                                            <span class="discount">-<%= Math.round(100 * (product.originalPrice - product.price) / product.originalPrice) %>%</span>
+                                        <% } %>
+                                    </div>
+                                    <div class="list-actions">
+                                        <% if (product.inStock) { %>
+                                            <button class="add-to-cart-btn" data-product-id="<%= product.id %>"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                                        <% } else { %>
+                                            <button class="notify-btn" onclick="notifyWhenAvailable('<%= product.id %>', this)"><i class="fas fa-bell"></i> Notify Me</button>
+                                        <% } %>
+                                        <!-- Wishlist button removed -->
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-products">
+                            <div class="no-products-icon"><i class="fas fa-box-open"></i></div>
+                            <div class="no-products-title">No products found</div>
+                            <div class="no-products-description">Try adjusting your filters or search for something else.</div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Enhanced Pagination -->
+            <% if (totalPages > 1) { %>
+                <div class="pagination-section">
+                    <div class="pagination">
+                        <% const prevPage = currentPage - 1; %>
+                        <% const nextPage = currentPage + 1; %>
+
+                        <a href="<%= currentPage > 1 ? `/products?page=${prevPage}` : '#' %>" 
+                           class="pagination-btn prev<%= currentPage === 1 ? ' disabled' : '' %>"
+                           aria-label="Previous Page">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+
+                        <div class="pagination-numbers">
+                            <% let startPage = Math.max(1, currentPage - 2); %>
+                            <% let endPage = Math.min(totalPages, currentPage + 2); %>
+
+                            <% if (startPage > 1) { %>
+                                <a href="/products?page=1" class="pagination-btn">1</a>
+                                <% if (startPage > 2) { %>
+                                    <span class="pagination-ellipsis">...</span>
+                                <% } %>
+                            <% } %>
+
+                            <% for (let i = startPage; i <= endPage; i++) { %>
+                                <a href="/products?page=<%= i %>" 
+                                   class="pagination-btn<%= i === currentPage ? ' active' : '' %>" 
+                                   <%= i === currentPage ? 'aria-current="page"' : '' %>>
+                                    <%= i %>
+                                </a>
+                            <% } %>
+
+                            <% if (endPage < totalPages) { %>
+                                <% if (endPage < totalPages - 1) { %>
+                                    <span class="pagination-ellipsis">...</span>
+                                <% } %>
+                                <a href="/products?page=<%= totalPages %>" class="pagination-btn"><%= totalPages %></a>
+                            <% } %>
+                        </div>
+
+                        <a href="<%= currentPage < totalPages ? `/products?page=${nextPage}` : '#' %>" 
+                           class="pagination-btn next<%= currentPage >= totalPages ? ' disabled' : '' %>"
+                           aria-label="Next Page">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                    <div class="pagination-info">
+                        Showing <strong><%= ((currentPage - 1) * limit) + 1 %>-<%= Math.min(currentPage * limit, totalProducts) %></strong> 
+                        of <strong><%= totalProducts %></strong> products
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+    <script src="/scripts/products.js"></script>
+    <script src="/scripts/addToCart.js"></script>
+    <script>
+    // Ensure cart count is persistent for guest users
+    // (function() {
+    //   var userMeta = document.querySelector('meta[name="user-logged-in"]');
+    //   var isLoggedIn = userMeta && userMeta.content === 'true';
+    //   if (!isLoggedIn) {
+    //     var guestCart = JSON.parse(localStorage.getItem('guestCart')) || { items: [] };
+    //     var count = guestCart.items.reduce(function(total, item) { return total + item.quantity; }, 0);
+    //     document.querySelectorAll('.cart-count, #cartCount').forEach(function(el) {
+    //       el.textContent = count;
+    //       el.style.display = count > 0 ? 'flex' : 'none';
+    //     });
+    //   }
+    // })();
+    </script>
+</body>
+</html>

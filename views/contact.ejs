@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Contact Us</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <meta name="description" content="Get in touch with TexosDrinks. Contact us for questions, support, or partnership opportunities. We're here to help!">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/contact.css">
+    <link rel="stylesheet" href="css/header2.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="Images/logo1.png" sizes="256x256">
+</head>
+<body>
+    <%- include('partials/headerSelector', { user: user || null }) %>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="contact-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        GET IN <span class="hero-accent">TOUCH</span>
+                    </h1>
+                    <p class="hero-description">
+                        Have questions, feedback, or want to partner with us? We'd love to hear from you. 
+                        Our team is here to help and respond to all inquiries promptly.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Content -->
+        <section class="contact-content">
+            <div class="container">
+                <div class="contact-grid">
+                    <!-- Contact Form -->
+                    <div class="contact-form-section">
+                        <h2 class="section-title">
+                            SEND US A <span class="title-accent">MESSAGE</span>
+                        </h2>
+                        <form class="contact-form" id="contactForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <input type="text" id="firstName" name="firstName" class="form-input" required placeholder=" " />
+                                    <label for="firstName" class="form-label">First Name</label>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="lastName" name="lastName" class="form-input" required placeholder=" " />
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" id="email" name="email" class="form-input" required placeholder=" " />
+                                <label for="email" class="form-label">Email Address </label>
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" id="phone" name="phone" class="form-input" placeholder=" " />
+                                <label for="phone" class="form-label">Phone Number</label>
+                            </div>
+                            <div class="form-group">
+                                <select id="subject" name="subject" class="form-input-select" required aria-label="Subject">
+                                    <option value="" disabled selected hidden>Select a subject</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="support">Customer Support</option>
+                                    <option value="partnership">Partnership</option>
+                                    <option value="feedback">Feedback</option>
+                                    <option value="wholesale">Wholesale Orders</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="message" name="message" class="form-input form-textarea" rows="6" required placeholder=" "></textarea>
+                                <label for="message" class="form-label">Message</label>
+                            </div>
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-paper-plane"></i>
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="contact-info-section">
+                        <h2 class="section-title">
+                            CONTACT <span class="title-accent">INFO</span>
+                        </h2>
+                        
+                        <div class="contact-cards">
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h3 class="contact-title">Our Location</h3>
+                                    <p class="contact-text">
+                                        123 Beverage Street<br>
+                                        Drink City, DC 12345<br>
+                                        United States
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h3 class="contact-title">Phone</h3>
+                                    <p class="contact-text">
+                                        <a href="tel:+1234567890">+1 (234) 567-8900</a><br>
+                                        <span class="contact-hours">Mon-Fri: 9AM-6PM EST</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h3 class="contact-title">Email</h3>
+                                    <p class="contact-text">
+                                        <a href="mailto:hello@texosdrinks.com">hello@texosdrinks.com</a><br>
+                                        <a href="mailto:support@texosdrinks.com">support@texosdrinks.com</a>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="contact-card">
+                                <div class="contact-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="contact-details">
+                                    <h3 class="contact-title">Business Hours</h3>
+                                    <p class="contact-text">
+                                        Monday - Friday: 9:00 AM - 6:00 PM<br>
+                                        Saturday: 10:00 AM - 4:00 PM<br>
+                                        Sunday: Closed
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Links -->
+                        <div class="social-section">
+                            <h3 class="social-title">Follow Us</h3>
+                            <div class="social-links">
+                                <a href="#" class="social-link" aria-label="Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="social-link" aria-label="Instagram">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" class="social-link" aria-label="Twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="social-link" aria-label="TikTok">
+                                    <i class="fab fa-tiktok"></i>
+                                </a>
+                                <a href="#" class="social-link" aria-label="LinkedIn">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        FREQUENTLY ASKED <span class="title-accent">QUESTIONS</span>
+                    </h2>
+                    <p class="section-subtitle">
+                        Quick answers to common questions
+                    </p>
+                </div>
+                
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            <span>What are your shipping options?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>We offer standard shipping (3-5 business days) and express shipping (1-2 business days). Free shipping is available on orders over $50.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            <span>Do you offer wholesale pricing?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes! We offer competitive wholesale pricing for retailers and businesses. Contact us at wholesale@texosdrinks.com for more information.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            <span>What is your return policy?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>We offer a 30-day satisfaction guarantee. If you're not completely satisfied with your purchase, contact us for a full refund or exchange.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)">
+                            <span>Are your products organic?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Many of our products feature organic ingredients. Look for the "ORGANIC" badge on product pages, and check individual product descriptions for detailed ingredient information.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script src="scripts/common.js"></script>
+    <script>
+        // FAQ Toggle Function
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            const answer = faqItem.querySelector('.faq-answer');
+            const icon = button.querySelector('i');
+            
+            // Close all other FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                    item.querySelector('.faq-answer').style.maxHeight = null;
+                    item.querySelector('i').style.transform = 'rotate(0deg)';
+                }
+            });
+            
+            // Toggle current FAQ item
+            faqItem.classList.toggle('active');
+            
+            if (faqItem.classList.contains('active')) {
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                answer.style.maxHeight = null;
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Contact Form Submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simple form validation and submission simulation
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Simulate form submission
+            alert('Thank you for your message! We\'ll get back to you within 24 hours.');
+            this.reset();
+        });
+    </script>
+</body>
+</html>

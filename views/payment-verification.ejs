@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Payment Verification</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/header2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+    <style>
+        .payment-result {
+            max-width: 600px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .success-icon {
+            color: #27ae60;
+        }
+        
+        .error-icon {
+            color: #e74c3c;
+        }
+        
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .result-message {
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+        
+        .transaction-details {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .detail-label {
+            color: var(--gray);
+        }
+        
+        .detail-value {
+            font-weight: 500;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .primary-btn {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .primary-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        .secondary-btn {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+        
+        .secondary-btn:hover {
+            background: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/headerSelector', { user: user || null }) %>
+    
+    <main>
+        <div class="payment-result">
+            <% if (status === 'success') { %>
+                <div class="result-icon success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1 class="result-title">Payment Successful!</h1>
+                <p class="result-message">
+                    Your payment has been processed successfully. We've sent a confirmation email with your order details.
+                </p>
+                
+                <div class="transaction-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Order ID:</span>
+                        <span class="detail-value">#<%= order.id %></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Amount Paid:</span>
+                        <span class="detail-value">₦<%= transaction.amount.toLocaleString() %></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Transaction Reference:</span>
+                        <span class="detail-value"><%= transaction.paystack_reference %></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Payment Date:</span>
+                        <span class="detail-value"><%= new Date(transaction.created_at).toLocaleString() %></span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <a href="/orders/<%= order.id %>" class="action-btn primary-btn">
+                        <i class="fas fa-eye"></i> View Order
+                    </a>
+                    <a href="/products" class="action-btn secondary-btn">
+                        <i class="fas fa-shopping-bag"></i> Continue Shopping
+                    </a>
+                </div>
+            <% } else { %>
+                <div class="result-icon error-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <h1 class="result-title">Payment Failed</h1>
+                <p class="result-message">
+                    We couldn't process your payment. <%= message || 'Please try again or use a different payment method.' %>
+                </p>
+                
+                <% if (transaction) { %>
+                    <div class="transaction-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Order ID:</span>
+                            <span class="detail-value">#<%= order.id %></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Transaction Reference:</span>
+                            <span class="detail-value"><%= transaction.paystack_reference %></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Error:</span>
+                            <span class="detail-value"><%= transaction.status %></span>
+                        </div>
+                    </div>
+                <% } %>
+                
+                <div class="action-buttons">
+                    <a href="/checkout" class="action-btn primary-btn">
+                        <i class="fas fa-redo"></i> Try Again
+                    </a>
+                    <a href="/contact" class="action-btn secondary-btn">
+                        <i class="fas fa-headset"></i> Contact Support
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </main>
+    
+    <%- include('partials/footer') %>
+</body>
+</html>

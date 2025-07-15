@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="stylesheet" href="/css/notification.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+    <%- include('../partials/csrfProtection') %>
+</head>
+<body>
+    
+    <script src="/scripts/adminShared.js"></script>
+    <%- include('../partials/header3', { admin: admin }) %>
+    <main class="dashboard-main">
+        <div class="dashboard-banner">
+            <div class="container">
+                <div class="banner-content">
+                    <div class="welcome-section">
+                        <div class="user-avatar admin-avatar">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="welcome-text">
+                            <h1>Welcome, <span class="user-name"><%= admin ? admin.username : 'Admin' %></span>!</h1>
+                            <p>Manage products, categories, orders, and more</p>
+                        </div>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat-item">
+                            <div class="stat-icon"><i class="fas fa-box"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-number"><%= typeof productCount !== 'undefined' ? productCount : '--' %></span>
+                                <span class="stat-label">Products</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon"><i class="fas fa-list"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-number" id="categoryCountRealtime"><%= typeof categoryCount !== 'undefined' ? categoryCount : '--' %></span>
+                                <span class="stat-label">Categories</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-number"><%= typeof orderCount !== 'undefined' ? orderCount : '--' %></span>
+                                <span class="stat-label">Orders</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-container">
+            <div class="container">
+                <div class="dashboard-layout">
+                    <!-- Sidebar Navigation -->
+                    <%- include('partials/adminSidebar', { page: 'dashboard' }) %>
+                    <!-- Main Content -->
+                    <section class="dashboard-content">
+                        <div class="content-header">
+                            <h2>Admin Overview</h2>
+                            <p>Access and manage all administrative features</p>
+                        </div>
+                        <div class="dashboard-grid">
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <div class="card-icon"><i class="fas fa-list"></i></div>
+                                    <div class="card-title">
+                                        <h4>Manage Categories</h4>
+                                        <p>Organize product categories</p>
+                                    </div>
+                                    <a href="/admin/categories" class="card-action"><i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <div class="card-icon"><i class="fas fa-box"></i></div>
+                                    <div class="card-title">
+                                        <h4>Manage Products</h4>
+                                        <p>Add, edit, or remove products</p>
+                                    </div>
+                                    <a href="/admin/products" class="card-action"><i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <div class="card-icon"><i class="fas fa-shopping-cart"></i></div>
+                                    <div class="card-title">
+                                        <h4>View Orders</h4>
+                                        <p>Track and manage orders</p>
+                                    </div>
+                                    <a href="/admin/orders" class="card-action"><i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <div class="card-icon"><i class="fas fa-users"></i></div>
+                                    <div class="card-title">
+                                        <h4>Manage Users</h4>
+                                        <p>To manage users</p>
+                                    </div>
+                                    <a href="/admin/products" class="card-action"><i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <div class="card-header">
+                                    <div class="card-icon"><i class="fas fa-cog"></i></div>
+                                    <div class="card-title">
+                                        <h4>Settings</h4>
+                                        <p>Manage admin Settings</p>
+                                    </div>
+                                    <a href="/admin/products" class="card-action"><i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+    <%- include('../partials/footer') %>
+    <script src="/scripts/admin-csrf.js"></script>
+    <script src="/scripts/adminDashboard.js"></script>
+    <script src="/scripts/dashboard-counts.js"></script>
+</body>
+</html>

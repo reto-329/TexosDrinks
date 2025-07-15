@@ -1,0 +1,189 @@
+/* Responsive styles for admin orders page */
+/* Base styles for the order cards */
+.order-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.75rem;
+}
+
+.order-card-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.order-card-label {
+  font-weight: 500;
+  color: #666;
+}
+
+.order-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Default view settings */
+.mobile-view {
+  display: none;
+}
+
+.desktop-view {
+  display: block;
+}
+
+/* Filter buttons container */
+.order-filters-container {
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.order-filters {
+  display: flex;
+  gap: 0.5rem;
+  padding-bottom: 0.25rem;
+}
+
+.filter-btn {
+  background-color: #f3f4f6;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.filter-btn.active {
+  background-color: #dc2626;
+  color: white;
+}
+
+/* Responsive breakpoints */
+@media screen and (max-width: 1024px) {
+  .order-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .filter-btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    white-space: nowrap;
+  }
+  
+  .admin-content {
+    padding: 1rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .order-table {
+    min-width: 650px;
+  }
+  
+  .order-filters {
+    justify-content: flex-start;
+  }
+  
+  .admin-layout {
+    flex-direction: column;
+  }
+  
+  .admin-main {
+    width: 100%;
+  }
+  
+  .content-header {
+    padding: 1rem 0;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .mobile-view {
+    display: block;
+  }
+  
+  .desktop-view {
+    display: none;
+  }
+  
+  .content-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .content-header p {
+    font-size: 0.9rem;
+  }
+  
+  .filter-btn {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+  
+  /* Improve mobile card view */
+  .order-card {
+    padding: 0.75rem;
+  }
+  
+  .order-card-header {
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .action-btn {
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem;
+  }
+  
+  .status-select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  /* Fix admin sidebar for mobile */
+  .menu-panel-sidebar {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Fix for very small screens */
+@media screen and (max-width: 360px) {
+  .order-card-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .order-status {
+    align-self: flex-start;
+  }
+}

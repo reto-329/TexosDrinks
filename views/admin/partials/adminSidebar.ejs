@@ -1,0 +1,99 @@
+<link rel="stylesheet" href="/css/admin-sidebar.css">
+<button class="mobile-menu-toggle" id="adminSidebarToggle" aria-label="Open sidebar" aria-controls="adminSidebar" aria-expanded="false">
+    <i class="fas fa-bars"></i>
+</button>
+<aside class="menu-panel-sidebar" id="adminSidebar" aria-hidden="true">
+    <button class="sidebar-close-btn" id="adminSidebarClose" aria-label="Close sidebar">
+        <i class="fas fa-times"></i>
+    </button>
+    <div class="sidebar-header">
+        <h3><i class="fas fa-user-shield"></i> Admin Panel</h3>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">
+            <h4>Management</h4>
+                <ul class="nav-list">
+                    <li class="nav-item <%= page === 'dashboard' ? 'active' : '' %>">
+                        <a href="/admin/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+                    </li>
+                    <li class="nav-item <%= page === 'categories' ? 'active' : '' %>">
+                        <a href="/admin/categories" class="nav-link"><i class="fas fa-list"></i> <span>Categories</span></a>
+                    </li>
+                    <li class="nav-item <%= page === 'products' ? 'active' : '' %>">
+                        <a href="/admin/products" class="nav-link"><i class="fas fa-box"></i> <span>Products</span></a>
+                    </li>
+                    <li class="nav-item <%= page === 'orders' ? 'active' : '' %>">
+                        <a href="/admin/orders" class="nav-link"><i class="fas fa-shopping-cart"></i> <span>Orders</span></a>
+                    </li>
+                    <li class="nav-item <%= page === 'users' ? 'active' : '' %>">
+                        <a href="/admin/users" class="nav-link"><i class="fas fa-users"></i> <span>Users</span></a>
+                    </li>
+                    <li class="nav-item <%= page === 'settings' ? 'active' : '' %>">
+                        <a href="/admin/settings" class="nav-link"><i class="fas fa-cog"></i> <span>Settings</span></a>
+                    </li>
+                </ul>
+        </div>
+        <div class="nav-section">
+            <h4>Quick Links</h4>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="#" class="nav-link" onclick="logoutAndGoHome(event)"><i class="fas fa-home"></i> <span>Home</span></a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="sidebar-footer">
+        <button type="button" class="logout-btn" onclick="logoutFromAdminDashboard()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
+    </div>
+</aside>
+<script>
+(function() {
+    const sidebar = document.getElementById('adminSidebar');
+    const toggleBtn = document.getElementById('adminSidebarToggle');
+    const closeBtn = document.getElementById('adminSidebarClose');
+    function openSidebar() {
+        sidebar.classList.add('active');
+        document.body.classList.add('sidebar-open');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('sidebar-open');
+    }
+    function closeSidebar() {
+        sidebar.classList.remove('active');
+        document.body.classList.remove('sidebar-open');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('sidebar-open');
+    }
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (sidebar.classList.contains('active')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                closeSidebar();
+            });
+        }
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 1024 && sidebar.classList.contains('active')) {
+                if (!sidebar.contains(e.target) && e.target !== toggleBtn) {
+                    closeSidebar();
+                }
+            }
+        });
+        // Optional: close sidebar with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('active')) {
+                closeSidebar();
+            }
+        });
+    }
+})();
+</script>
+

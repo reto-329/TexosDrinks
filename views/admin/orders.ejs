@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texos Drinks:: Orders Management</title>
+    <link rel="stylesheet" href="/css/header-responsive.css">
+    <link rel="stylesheet" href="/css/admin-orders.css">
+    <link rel="stylesheet" href="/css/order-status.css">
+    <link rel="stylesheet" href="/css/pagination.css">
+    <link rel="stylesheet" href="/css/admin-orders-responsive.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="/Images/logo1.png" sizes="256x256">
+    <%- include('../partials/csrfProtection') %>
+</head>
+<body>
+    <%- include('../partials/header3', { admin: admin }) %>
+    
+    <div class="admin-layout">
+        <%- include('partials/adminSidebar', { page: 'orders' }) %>
+        
+        <main class="admin-main">
+            <div class="admin-content">
+                <div class="content-header">
+                    <h1>Order Management</h1>
+                    <p>View and manage customer orders</p>
+                </div>
+                
+                <div class="order-filters-container">
+                    <div class="order-filters">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="pending">Pending</button>
+                        <button class="filter-btn" data-filter="processing">Processing</button>
+                        <button class="filter-btn" data-filter="paid">Paid</button>
+                        <button class="filter-btn" data-filter="fulfilled">Fulfilled</button>
+                        <button class="filter-btn" data-filter="cancelled">Cancelled</button>
+                        <button class="filter-btn" data-filter="refunded">Refunded</button>
+                        <button class="filter-btn" data-filter="disputed">Disputed</button>
+                        <button class="filter-btn" data-filter="refund_pending">Refund</button>
+                    </div>
+                </div>
+                
+                <!-- Desktop view (table) -->
+                <div class="table-container desktop-view">
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <!-- Orders will be loaded here via JavaScript -->
+                        </tbody>
+                    </table>
+                    <!-- Pagination will be added here via JavaScript -->
+                </div>
+                
+                <!-- Mobile view (cards) -->
+                <div class="mobile-view" id="orderCardContainer">
+                    <!-- Order cards will be loaded here via JavaScript -->
+                </div>
+                
+                <!-- Pagination will be added here via JavaScript -->
+            </div>
+        </main>
+    </div>
+    
+    <script src="/scripts/admin-orders.js"></script>
+    <script src="/scripts/admin-csrf.js"></script>
+    <%- include('../partials/footer') %>
+</body>
+</html>
