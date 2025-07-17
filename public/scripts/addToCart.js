@@ -20,12 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-
-    // Update cart count for guest users on page load
-    if (!document.querySelector('meta[name="user-logged-in"]')) {
-        const guestCart = JSON.parse(localStorage.getItem('guestCart')) || { items: [] };
-        updateCartCount(guestCart.items.reduce((total, item) => total + item.quantity, 0));
-    }
 });
 
 async function addToCart(productId, quantity, button) {
@@ -39,10 +33,6 @@ async function addToCart(productId, quantity, button) {
 
         if (isLoggedIn) {
             await addToCartAPI(productId, quantity);
-            // Update header cart count live for logged-in users
-            if (typeof window.updateLoggedInCartCount === 'function') {
-                window.updateLoggedInCartCount();
-            }
         } else {
             addToCartGuest(productId, quantity);
         }
@@ -67,49 +57,27 @@ async function addToCart(productId, quantity, button) {
 
 async function addToCartAPI(productId, quantity) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-    if (!csrfToken) {
-        console.warn('CSRF token is missing. If your backend requires it, this request may fail.');
-    }
-    // Try to get JWT from localStorage (if your app uses JWT)
-    const jwt = localStorage.getItem('token') || sessionStorage.getItem('token');
     const headers = {
         'Content-Type': 'application/json',
         ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {})
     };
-    if (jwt) {
-        headers['Authorization'] = `Bearer ${jwt}`;
-    }
-    let response;
-    try {
-        response = await fetch('/api/cart', {
-            method: 'POST',
-            headers,
-            credentials: 'include', // Use 'include' for cross-origin/session compatibility
-            body: JSON.stringify({
-                product_id: productId,
-                quantity: quantity
-            })
-        });
-    } catch (networkError) {
-        console.error('Network error while adding to cart:', networkError);
-        throw new Error('Network error. Please check your connection.');
-    }
+
+    const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+        body: JSON.stringify({
+            product_id: productId,
+            quantity: quantity
+        })
+    });
 
     if (!response.ok) {
-        let errorMsg = 'Failed to add to cart';
-        try {
-            const error = await response.json();
-            errorMsg = error.message || errorMsg;
-            console.error('API error response:', error);
-        } catch (parseError) {
-            console.error('Error parsing error response:', parseError);
-        }
-        throw new Error(errorMsg);
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to add to cart');
     }
 
-    const data = await response.json();
-    updateCartCount(data.cartCount || 0);
-    return data;
+    window.dispatchEvent(new CustomEvent('cartUpdated'));
 }
 
 function addToCartGuest(productId, quantity) {
@@ -131,15 +99,5 @@ function addToCartGuest(productId, quantity) {
     }
 
     localStorage.setItem('guestCart', JSON.stringify(guestCart));
-    updateCartCount(guestCart.items.reduce((total, item) => total + item.quantity, 0));
-}
-
-function updateCartCount(count) {
-    const cartCountElements = document.querySelectorAll('.cart-count, .header-cart-count');
-    cartCountElements.forEach(el => {
-        el.textContent = count;
-        el.style.display = count > 0 ? 'flex' : 'none';
-        el.classList.add('bounce');
-        setTimeout(() => el.classList.remove('bounce'), 500);
-    });
+    window.dispatchEvent(new CustomEvent('cartUpdated'));
 }

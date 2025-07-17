@@ -1,4 +1,7 @@
 <!-- views/partials/header.ejs -->
+<head>
+    <meta name="user-logged-in" content="<%= typeof user !== 'undefined' && user ? 'true' : 'false' %>">
+</head>
 <header class="header" id="header">
     <div class="container">
         <div class="header-content">
