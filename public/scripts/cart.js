@@ -30,9 +30,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     await loadDeliverySettings();
     
     // Then initialize cart if user is guest
-    const userMeta = document.querySelector('meta[name="user-logged-in"]');
-    const isLoggedIn = userMeta && userMeta.content === 'true';
-    if (!isLoggedIn) {
+    if (document.getElementById('guestCartCount')) {
         initializeGuestCart();
     }
 });
@@ -55,8 +53,10 @@ function updateGuestCartDisplay() {
     const cartContainer = document.getElementById('local-cart');
     const itemCount = cart.items.reduce((total, item) => total + item.quantity, 0);
     
-    // Dispatch event to update header cart count
-    window.dispatchEvent(new CustomEvent('cartUpdated'));
+    // Update cart count
+    if (document.getElementById('guestCartCount')) {
+        document.getElementById('guestCartCount').textContent = itemCount;
+    }
     
     // Handle empty cart
     if (itemCount === 0) {
