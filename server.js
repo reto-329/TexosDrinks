@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -45,12 +46,18 @@ const addressBookRoutes = require('./routes/addressBookRoutes');
 
 const app = express();
 
+// Set views directory path
+app.set('views', path.join(__dirname, 'views'));
 app.set("view engine", "ejs");
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
+
+// Static files middleware (if you have public directory)
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(async (req, res, next) => {
     const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
@@ -638,8 +645,9 @@ app.post('/admin/products/edit/:id', adminProtect, uploadMiddleware.single('imag
 app.delete('/admin/products/delete/:id', adminProtect, deleteProductAjax);
 
 
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => {
+//     console.log(`Server running on port ${PORT}`);
+// });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;
