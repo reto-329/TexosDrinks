@@ -1,27 +1,43 @@
-// db.js (ES Modules)
-import postgres from 'postgres';
+// db.js (CommonJS)
+const { Pool } = require('pg');
+require('dotenv').config();
 
-const connectionString = process.env.DATABASE_URL || 
-  `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+// Validate environment variables
+const requiredVars = ['DB_USER', 'DB_HOST', 'DB_NAME', 'DB_PASSWORD', 'DB_PORT'];
+const missingVars = requiredVars.filter(v => !process.env[v]);
 
-const sql = postgres(connectionString, {
+if (missingVars.length > 0) {
+  throw new Error(`Missing database config: ${missingVars.join(', ')}`);
+}
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || 
+    `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
   ssl: {
-    rejectUnauthorized: false // Required for Supabase
+    rejectUnauthorized: false
   },
-  idle_timeout: 20,
-  max_lifetime: 60 * 30
+  connectionTimeoutMillis: 5000,
+  idleTimeoutMillis: 30000
 });
 
-// Test connection
+// Enhanced connection test
+pool.on('connect', () => console.log('New client connected'));
+pool.on('error', err => console.error('Pool error:', err));
+
 async function testConnection() {
+  const client = await pool.connect();
   try {
-    const result = await sql`SELECT NOW()`;
-    console.log('Database connected at:', result[0].now);
-  } catch (err) {
-    console.error('Connection test failed:', err);
+    const res = await client.query('SELECT NOW()');
+    console.log('Database connected at:', res.rows[0].now);
+  } finally {
+    client.release();
   }
 }
 
-testConnection();
+testConnection().catch(err => console.error('Connection test failed:', err));
 
-export default sql;
+module.exports = {
+  query: (text, params) => pool.query(text, params),
+  pool,
+  sql: pool // For compatibility with both approaches
+};
