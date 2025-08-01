@@ -1,43 +1,48 @@
-// db.js (CommonJS)
 const { Pool } = require('pg');
 require('dotenv').config();
 
 // Validate environment variables
-const requiredVars = ['DB_USER', 'DB_HOST', 'DB_NAME', 'DB_PASSWORD', 'DB_PORT'];
-const missingVars = requiredVars.filter(v => !process.env[v]);
-
-if (missingVars.length > 0) {
-  throw new Error(`Missing database config: ${missingVars.join(', ')}`);
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is required');
 }
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 
-    `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
+  connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false
+    rejectUnauthorized: false // Required for Supabase
   },
-  connectionTimeoutMillis: 5000,
-  idleTimeoutMillis: 30000
+  connectionTimeoutMillis: 5000, // 5 second connection timeout
+  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+  max: 20 // Maximum number of clients in the pool
 });
 
-// Enhanced connection test
-pool.on('connect', () => console.log('New client connected'));
-pool.on('error', err => console.error('Pool error:', err));
-
+// Connection test with retries
 async function testConnection() {
-  const client = await pool.connect();
-  try {
-    const res = await client.query('SELECT NOW()');
-    console.log('Database connected at:', res.rows[0].now);
-  } finally {
-    client.release();
+  let attempts = 3;
+  while (attempts > 0) {
+    try {
+      const client = await pool.connect();
+      const res = await client.query('SELECT NOW()');
+      client.release();
+      console.log('Database connected at:', res.rows[0].now);
+      return true;
+    } catch (err) {
+      attempts--;
+      console.error(`Connection failed (${attempts} attempts left):`, err.message);
+      if (attempts === 0) throw err;
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
   }
 }
 
-testConnection().catch(err => console.error('Connection test failed:', err));
+// Test connection on startup
+testConnection()
+  .catch(err => {
+    console.error('Fatal database connection error:', err);
+    process.exit(1); // Exit if we can't connect to database
+  });
 
 module.exports = {
   query: (text, params) => pool.query(text, params),
-  pool,
-  sql: pool // For compatibility with both approaches
+  pool
 };
