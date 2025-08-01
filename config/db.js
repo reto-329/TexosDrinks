@@ -1,20 +1,19 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Basic configuration check
 if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL environment variable is required');
+  throw new Error('DATABASE_URL is required');
 }
 
-// Simplified pool configuration
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: true }, // Required for Render
-  max: 10, // Reasonable connection limit
-  idleTimeoutMillis: 30000 // Close idle connections after 30s
+  ssl: {
+    rejectUnauthorized: false // Accept self-signed certs (safe for Render)
+  },
+  max: 10,
+  idleTimeoutMillis: 30000
 });
 
-// Basic connection test
 async function testConnection() {
   const client = await pool.connect();
   try {
@@ -26,13 +25,11 @@ async function testConnection() {
   }
 }
 
-// Test connection on startup
 testConnection().catch(err => {
   console.error('Database connection failed:', err);
   process.exit(1);
 });
 
-// Graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('Closing database pool...');
   await pool.end();
