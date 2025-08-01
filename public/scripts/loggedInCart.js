@@ -172,10 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         // Refresh cart display
         fetchCart();
-        // Update cart count in header
-        if (window.updateLoggedInCartCount) {
-          window.updateLoggedInCartCount();
-        }
+        
       } else {
         // Try to get error details
         let errorMessage = 'Failed to clear cart';

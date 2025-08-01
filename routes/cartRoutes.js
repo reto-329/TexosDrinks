@@ -5,7 +5,8 @@ const {
   addItemToCart,
   updateItemInCart,
   removeItemFromCart,
-  emptyCart
+  emptyCart,
+  getCartCount
 } = require('../controllers/cartController');
 const { protect } = require('../middlewares/auth');
 const { validate } = require('../middlewares/validate');
@@ -34,6 +35,9 @@ router.delete('/:product_id', protect, removeItemFromCart);
 
 // Clear entire cart
 router.delete('/', protect, emptyCart);
+
+// Get cart count
+router.get('/count', protect, getCartCount);
 
 // Merge guest cart items into user cart
 router.post('/merge', protect, async (req, res) => {

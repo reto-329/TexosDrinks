@@ -1,81 +1,65 @@
 // public/scripts/headerCartCount.js
-// Updates the cart count in the header for logged-in users
 
-async function updateLoggedInCartCount() {
-  try {
-    const res = await fetch('/api/cart', { credentials: 'same-origin' });
-    const data = await res.json();
-    if (data.success && data.data && Array.isArray(data.data.items)) {
-      const count = data.data.items.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0);
-      
-      // Update all cart count elements (there might be multiple in different headers)
-      const cartCountElements = document.querySelectorAll('.cart-count, .cart-counter, #cartCount');
-      cartCountElements.forEach(el => {
-        if (el) {
-          const oldCount = parseInt(el.textContent) || 0;
-          el.textContent = count;
-          el.style.display = count > 0 ? 'flex' : 'none';
-          
-          // Add animation if count changed
-          if (count !== oldCount) {
+// Function to update the cart count display in the header
+function updateHeaderCartCount(count) {
+    const cartCountElements = document.querySelectorAll('.cart-count, #cartCount');
+    cartCountElements.forEach(el => {
+        el.textContent = count;
+        el.style.display = count > 0 ? 'flex' : 'none';
+        if (count > 0) {
             el.classList.add('bounce');
             setTimeout(() => el.classList.remove('bounce'), 500);
-          }
         }
-      });
-      
-      return count; // Return the count for other functions that might need it
-    }
-    return 0;
-  } catch (err) {
-    console.error('Error updating cart count:', err);
-    return 0;
-  }
+    });
 }
 
-document.addEventListener('DOMContentLoaded', updateLoggedInCartCount);
+// Function for logged-in users to fetch cart count from the API
+async function fetchUserCartCount() {
+    try {
+        const response = await fetch('/api/cart/count', {
+            credentials: 'include'
+        });
+        if (response.ok) {
+            const data = await response.json();
+            updateHeaderCartCount(data.count || 0);
+            return data.count || 0;
+        }
+    } catch (error) {
+        console.error('Error fetching cart count:', error);
+    }
+    return 0;
+}
 
-// Function to add item to cart with notification
-async function addToCartWithNotification(productId, quantity = 1) {
-  try {
-    // Check if user is logged in
+// Function for guest users to get cart count from local storage
+function getGuestCartCount() {
+    const guestCart = JSON.parse(localStorage.getItem('guestCart')) || { items: [] };
+    return guestCart.items.reduce((total, item) => total + item.quantity, 0);
+}
+
+// Main function to run on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
     const userMeta = document.querySelector('meta[name="user-logged-in"]');
     const isLoggedIn = userMeta && userMeta.content === 'true';
-    
-    if (isLoggedIn) {
-      // Add to user's cart in database
-      const response = await fetch('/api/cart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'same-origin',
-        body: JSON.stringify({
-          product_id: productId,
-          quantity: quantity
-        })
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to add item to cart');
-      }
-      
-      // Update cart count
-      await updateLoggedInCartCount();
-      
-      // Show success notification
-      showCartNotification('Item added to cart successfully!', 'success');
-    } else {
-      // For guest users, handle in guestCart.js
-      console.warn('User not logged in, cart operation should be handled by guestCart.js');
-    }
-  } catch (error) {
-    console.error('Error adding to cart:', error);
-    showCartNotification(error.message || 'Failed to add item to cart', 'error');
-  }
-}
 
-// Export functions for use in other scripts
-window.updateLoggedInCartCount = updateLoggedInCartCount;
-window.addToCartWithNotification = addToCartWithNotification;
+    if (isLoggedIn) {
+        fetchUserCartCount();
+    } else {
+        const count = getGuestCartCount();
+        updateHeaderCartCount(count);
+    }
+});
+
+// Expose global functions to allow other scripts to trigger updates
+window.updateCartCount = () => {
+    const userMeta = document.querySelector('meta[name="user-logged-in"]');
+    const isLoggedIn = userMeta && userMeta.content === 'true';
+    if (isLoggedIn) {
+        return fetchUserCartCount();
+    } else {
+        const count = getGuestCartCount();
+        updateHeaderCartCount(count);
+        return Promise.resolve(count);
+    }
+};
+
+window.updateHeaderCartCount = updateHeaderCartCount;

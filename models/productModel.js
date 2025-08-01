@@ -89,7 +89,22 @@ const updateProduct = async (id, name, description, price, stock, category_id, i
 };
 
 const deleteProduct = async (id) => {
-  // First get all image public_ids to delete from Cloudinary
+  // Check if product is referenced in order_items
+  const orderCheck = await query('SELECT COUNT(*) as count FROM order_items WHERE product_id = $1', [id]);
+  
+  if (parseInt(orderCheck.rows[0].count) > 0) {
+    throw new Error('Cannot delete product that has been ordered. Product is referenced in existing orders.');
+  }
+  
+  // Check if product is referenced in cart_items
+  const cartCheck = await query('SELECT COUNT(*) as count FROM cart_items WHERE product_id = $1', [id]);
+  
+  if (parseInt(cartCheck.rows[0].count) > 0) {
+    // Remove from all carts first
+    await query('DELETE FROM cart_items WHERE product_id = $1', [id]);
+  }
+  
+  // Get all image public_ids to delete from Cloudinary
   const images = await query('SELECT public_id FROM product_images WHERE product_id = $1', [id]);
   
   // Delete from Cloudinary
@@ -154,6 +169,33 @@ const updateProductWithImage = async (id, name, description, price, stock, categ
   }
 };
 
+// Reduce product stock when order is paid
+const reduceProductStock = async (product_id, quantity) => {
+  console.log(`Attempting to reduce stock for product ${product_id} by ${quantity}`);
+  
+  // First check current stock
+  const currentStock = await query('SELECT stock FROM products WHERE id = $1', [product_id]);
+  if (currentStock.rows.length === 0) {
+    console.log(`Product ${product_id} not found`);
+    return null;
+  }
+  
+  console.log(`Current stock for product ${product_id}: ${currentStock.rows[0].stock}`);
+  
+  const result = await query(
+    'UPDATE products SET stock = stock - $1 WHERE id = $2 AND stock >= $1 RETURNING *',
+    [quantity, product_id]
+  );
+  
+  if (result.rows.length === 0) {
+    console.log(`Failed to reduce stock for product ${product_id} - insufficient stock`);
+    return null;
+  }
+  
+  console.log(`Successfully reduced stock for product ${product_id}. New stock: ${result.rows[0].stock}`);
+  return result.rows[0];
+};
+
 module.exports = {
   createProduct,
   getAllProducts,
@@ -165,4 +207,5 @@ module.exports = {
   getCategoryNameById,
   getAllCategories,
   updateProductWithImage,
+  reduceProductStock,
 };

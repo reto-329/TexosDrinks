@@ -31,6 +31,15 @@
                             <i class="fas fa-info-circle"></i>
                             <span>You're shopping as a guest. <a href="/login" class="details-link">Sign in</a> to save your cart.</span>
                         </div>
+                        
+                        <div id="guestCartActions" style="margin-top: 2rem; display: none; justify-content: space-between;">
+                            <a href="/products" class="shop-btn" style="background: var(--light-gray); color: var(--dark);">
+                                <i class="fas fa-arrow-left"></i> Continue Shopping
+                            </a>
+                            <button class="shop-btn" onclick="showClearCartConfirmation()" style="background: var(--light-gray); color: var(--primary);">
+                                <i class="fas fa-trash"></i> Clear Cart
+                            </button>
+                        </div>
                     </div>
 
                     <div class="cart-summary">
@@ -68,7 +77,7 @@
                 <% } else if (cart && cart.items.length > 0) { %>
                     <!-- User Cart with Items -->
                     <div class="cart-section">
-                        <h1 class="cart-title">Your Cart (<%= cart.items.length %>)</h1>
+                        <h1 class="cart-title">Your Cart (<%= cart.items.reduce((acc, item) => acc + item.quantity, 0) %>)</h1>
                         <div class="cart-items">
                             <% cart.items.forEach(item => { %>
                                 <div class="cart-item" data-item-id="<%= item.id %>">
@@ -79,11 +88,7 @@
                                         <h3 class="item-name"><%= item.name %></h3>
                                         <div class="item-meta">
                                             <span class="seller">Category: <%= item.category_name %></span>
-                                            <% if (item.description) { %>
-                                                <p class="item-description" style="font-size: 0.875rem; color: var(--gray); margin-top: 0.25rem;">
-                                                    <%= item.description.substring(0, 50) %>...
-                                                </p>
-                                            <% } %>
+                                            <span class="stock-info">Stock: <%= item.stock %> available</span>
                                         </div>
                                         <% if (item.stock < 5) { %>
                                             <div class="stock-warning">
@@ -249,6 +254,12 @@
                     // Restore button state on error
                     confirmBtn.innerHTML = originalText;
                     confirmBtn.disabled = false;
+                })
+                .finally(() => {
+                    // Always restore button state and hide modal
+                    confirmBtn.innerHTML = originalText;
+                    confirmBtn.disabled = false;
+                    hideClearCartConfirmation();
                 });
         }
         

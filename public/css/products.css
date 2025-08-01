@@ -822,18 +822,20 @@ body {
 /* List View Styles - Complete Implementation */
 .products-list-header {
   display: none;
-  grid-template-columns: 2.5fr 1fr 1fr 1.5fr;
-  gap: 2rem;
-  padding: 1.5rem 2rem;
+  grid-template-columns: 3fr 1fr 1fr 1fr 1.5fr;
+  gap: 1.5rem;
+  padding: 1rem 2rem;
   margin-bottom: 0;
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--light) 100%);
-  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
-  border: 1px solid rgba(220, 38, 38, 0.1);
-  font-weight: 700;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.9rem;
+  background: var(--light-gray);
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  border: 1px solid #e2e8f0;
+  font-weight: 600;
+  color: var(--dark);
+  font-size: 0.875rem;
+}
+
+.list-view + .products-list-header {
+  display: grid;
 }
 
 .list-view + .products-list-header {
@@ -856,17 +858,17 @@ body {
 
 .list-view .product-card {
   display: grid;
-  grid-template-columns: 2.5fr 1fr 1fr 1.5fr;
+  grid-template-columns: 3fr 1fr 1fr 1fr 1.5fr;
   align-items: center;
-  gap: 2rem;
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid #f1f5f9;
+  gap: 1.5rem;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
   background: var(--white);
   transition: var(--transition);
   border-radius: 0;
   box-shadow: none;
   height: auto;
-  min-height: 100px;
+  min-height: 80px;
 }
 
 .list-view .product-card:hover {

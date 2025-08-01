@@ -57,6 +57,17 @@ if (document.querySelector('meta[name="user-logged-in"]').content === 'false') {
             cartContainer.appendChild(itemDiv);
         });
         cartCount.textContent = totalItems;
+        
+        // Update header cart count immediately
+        if (typeof window.updateHeaderCartCount === 'function') {
+            window.updateHeaderCartCount(totalItems);
+        }
+        
+        // Show/hide guest cart actions based on item count
+        const guestCartActions = document.getElementById('guestCartActions');
+        if (guestCartActions) {
+            guestCartActions.style.display = totalItems > 0 ? 'flex' : 'none';
+        }
         subtotalEl.textContent = `₦${subtotal.toLocaleString()}`;
         // Delivery fee logic
         if (subtotal >= FREE_DELIVERY_THRESHOLD) {
@@ -70,14 +81,9 @@ if (document.querySelector('meta[name="user-logged-in"]').content === 'false') {
             deliveryMsg.style.color = '';
             progressFill.style.width = `${Math.min(100, (subtotal / FREE_DELIVERY_THRESHOLD) * 100)}%`;
         }
-        // Only show FREE if subtotal is above threshold, otherwise show the fee
-        if (subtotal >= FREE_DELIVERY_THRESHOLD) {
-            deliveryFeeEl.textContent = 'FREE';
-        } else {
-            // Make sure we're displaying the actual fee from the database
-            deliveryFeeEl.textContent = `₦${DELIVERY_FEE.toLocaleString()}`;
-        }
-        totalEl.textContent = `₦${(subtotal + deliveryFee).toLocaleString()}`;
+        // For guest users, show message about signing in for delivery fee
+        deliveryFeeEl.innerHTML = '<span style="color: var(--gray); font-style: italic; font-size: 0.875rem;">Added when signed in</span>';
+        totalEl.textContent = `₦${subtotal.toLocaleString()}`;
         deliveryProgress.style.display = 'block';
     }
     // Remove item
@@ -85,8 +91,11 @@ if (document.querySelector('meta[name="user-logged-in"]').content === 'false') {
         let guestCart = JSON.parse(localStorage.getItem('guestCart')) || { items: [] };
         guestCart.items = guestCart.items.filter(item => item.id !== id);
         localStorage.setItem('guestCart', JSON.stringify(guestCart));
+        const totalCount = guestCart.items.reduce((total, item) => total + item.quantity, 0);
         renderGuestCart();
-        updateCartCount(guestCart.items.reduce((total, item) => total + item.quantity, 0));
+        if (typeof window.updateHeaderCartCount === 'function') {
+            window.updateHeaderCartCount(totalCount);
+        }
     };
     // Update quantity
     window.updateGuestCartQty = function(id, qty) {
@@ -97,8 +106,11 @@ if (document.querySelector('meta[name="user-logged-in"]').content === 'false') {
         if (item && qty <= item.stock) {
             item.quantity = qty;
             localStorage.setItem('guestCart', JSON.stringify(guestCart));
+            const totalCount = guestCart.items.reduce((total, item) => total + item.quantity, 0);
             renderGuestCart();
-            updateCartCount(guestCart.items.reduce((total, item) => total + item.quantity, 0));
+            if (typeof window.updateHeaderCartCount === 'function') {
+                window.updateHeaderCartCount(totalCount);
+            }
         }
     };
     // Clear guest cart - returns a promise for consistent behavior with logged-in version
@@ -106,8 +118,10 @@ if (document.querySelector('meta[name="user-logged-in"]').content === 'false') {
         return new Promise((resolve) => {
             // Show confirmation modal first (handled in cart.ejs)
             localStorage.removeItem('guestCart');
+            if (typeof window.updateHeaderCartCount === 'function') {
+                window.updateHeaderCartCount(0);
+            }
             renderGuestCart();
-            updateCartCount(0);
             
             // Show notification if available
             if (window.showCartNotification) {

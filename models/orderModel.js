@@ -142,6 +142,15 @@ const getUserOrderCount = async (userId) => {
   return parseInt(result.rows[0].count, 10);
 };
 
+// Get order items for stock reduction
+const getOrderItems = async (order_id) => {
+  const result = await query(
+    'SELECT product_id, quantity FROM order_items WHERE order_id = $1',
+    [order_id]
+  );
+  return result.rows;
+};
+
 // Export all order functions
 module.exports = {
   createOrder,
@@ -152,5 +161,6 @@ module.exports = {
   getAllOrderStatuses,
   getOrderStatusByName,
   getOrderCount,
-  getUserOrderCount
+  getUserOrderCount,
+  getOrderItems
 };

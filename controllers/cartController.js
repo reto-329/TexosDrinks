@@ -45,9 +45,11 @@ const addItemToCart = async (req, res) => {
     
     const items = await getCartItems(cart.id);
     const totals = calculateCartTotals(items);
+    const cartCount = items.reduce((total, item) => total + item.quantity, 0);
     
     res.json({
       success: true,
+      cartCount,
       data: {
         cartId: cart.id,
         items,
@@ -148,10 +150,30 @@ const emptyCart = async (req, res) => {
   }
 };
 
+const getCartCount = async (req, res) => {
+  try {
+    const cart = await getOrCreateCart(req.user.id);
+    const items = await getCartItems(cart.id);
+    const count = items.reduce((total, item) => total + item.quantity, 0);
+    
+    res.json({
+      success: true,
+      count
+    });
+  } catch (error) {
+    console.error('Get cart count error:', error);
+    res.status(error.statusCode || 500).json({
+      success: false,
+      error: error.message || 'Failed to get cart count'
+    });
+  }
+};
+
 module.exports = {
   getCart,
   addItemToCart,
   updateItemInCart,
   removeItemFromCart,
-  emptyCart
+  emptyCart,
+  getCartCount
 };

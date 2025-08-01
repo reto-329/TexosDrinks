@@ -87,6 +87,7 @@ function updateGuestCartDisplay() {
                     <h3 class="item-name">${item.name}</h3>
                     <div class="item-meta">
                         <span class="seller">Category: ${item.category || 'Beverage'}</span>
+                        <span class="stock-info">Stock: ${item.stock || 0} available</span>
                         ${item.description ? `<p class="item-description" style="font-size: 0.875rem; color: var(--gray); margin-top: 0.25rem;">
                             ${item.description.substring(0, 50)}...
                         </p>` : ''}
@@ -182,6 +183,12 @@ function updateGuestQuantity(productId, newQuantity) {
     const item = cart.items.find(item => item.id === productId);
     
     if (item) {
+        // Check stock limit
+        if (newQuantity > item.stock) {
+            showToast(`Only ${item.stock} items available in stock`, 'error');
+            return;
+        }
+        
         item.quantity = newQuantity;
         cart.lastUpdated = new Date().toISOString();
         localStorage.setItem('guestCart', JSON.stringify(cart));
@@ -192,7 +199,8 @@ function updateGuestQuantity(productId, newQuantity) {
 // Server Cart Functions (for logged-in users)
 async function updateQuantity(productId, newQuantity) {
     if (newQuantity < 1) {
-        newQuantity = 1;
+        removeFromCart(productId);
+        return;
     }
     
     try {

@@ -94,7 +94,11 @@ const addToCart = async (cart_id, product_id, quantity = 1) => {
   const product = productResult.rows[0];
   
   if (product.stock < quantity) {
-    throw new BadRequestError(`Only ${product.stock} items available in stock`);
+    if (product.stock === 0) {
+      throw new BadRequestError('This product is out of stock');
+    } else {
+      throw new BadRequestError(`Only ${product.stock} items available in stock`);
+    }
   }
 
   // Check if item exists in cart
@@ -109,7 +113,14 @@ const addToCart = async (cart_id, product_id, quantity = 1) => {
     const newQuantity = existingItem.rows[0].quantity + quantity;
     
     if (newQuantity > product.stock) {
-      throw new BadRequestError(`Cannot add more than available stock (${product.stock})`);
+      if (product.stock === 0) {
+        throw new BadRequestError('This product is out of stock');
+      } else if (existingItem.rows[0].quantity >= product.stock) {
+        throw new BadRequestError('This product is out of stock');
+      } else {
+        const remaining = product.stock - existingItem.rows[0].quantity;
+        throw new BadRequestError(`Only ${remaining} more item(s) can be added to cart`);
+      }
     }
 
     updatedItem = await query(

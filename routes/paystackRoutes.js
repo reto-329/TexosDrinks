@@ -9,7 +9,8 @@ const {
   updateTransactionStatus,
   getTransactionByReference
 } = require('../services/paystackService');
-const { getOrderById } = require('../models/orderModel');
+const { getOrderById, updateOrderStatus, getOrderItems } = require('../models/orderModel');
+const { reduceProductStock } = require('../models/productModel');
 
 // Initialize payment
 router.post('/initialize', protect, async (req, res) => {
@@ -78,7 +79,33 @@ router.get('/verify/:reference', protect, async (req, res) => {
     
     if (response.data.status === 'success') {
       // Update transaction status in database
-      await updateTransactionStatus(reference, 'success');
+      const updatedTransaction = await updateTransactionStatus(reference, 'success');
+      
+      // Update order status and reduce stock
+      if (updatedTransaction && updatedTransaction.order_id) {
+        console.log(`Processing order ${updatedTransaction.order_id} for stock reduction`);
+        try {
+          await updateOrderStatus(updatedTransaction.order_id, 'paid');
+          console.log(`Order ${updatedTransaction.order_id} status updated to paid`);
+          
+          // Reduce stock for each item in the order
+          const orderItems = await getOrderItems(updatedTransaction.order_id);
+          console.log(`Found ${orderItems.length} items in order ${updatedTransaction.order_id}:`, orderItems);
+          
+          for (const item of orderItems) {
+            const result = await reduceProductStock(item.product_id, item.quantity);
+            if (result) {
+              console.log(`✓ Stock reduced for product ${item.product_id} by ${item.quantity}`);
+            } else {
+              console.log(`✗ Failed to reduce stock for product ${item.product_id}`);
+            }
+          }
+        } catch (stockError) {
+          console.error(`Failed to reduce stock for order ${updatedTransaction.order_id}:`, stockError);
+        }
+      } else {
+        console.log('No transaction or order_id found for stock reduction');
+      }
       
       // Return success response
       res.status(200).json({

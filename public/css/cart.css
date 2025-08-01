@@ -111,9 +111,15 @@ body {
 }
 
 .seller,
-.volume {
+.volume,
+.stock-info {
   font-size: 0.875rem;
   color: var(--gray);
+}
+
+.stock-info {
+  font-weight: 500;
+  color: var(--success);
 }
 
 .stock-warning {

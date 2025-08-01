@@ -1,7 +1,8 @@
 // Webhook handler for Paystack events
 const crypto = require('crypto');
 const { updateTransactionStatus, getTransactionByReference } = require('../services/paystackService');
-const { updateOrderStatus } = require('../models/orderModel');
+const { updateOrderStatus, getOrderItems } = require('../models/orderModel');
+const { reduceProductStock } = require('../models/productModel');
 
 // Map Paystack events to order statuses
 const PAYSTACK_EVENT_TO_ORDER_STATUS = {
@@ -72,6 +73,26 @@ async function processWebhook(req, res) {
       try {
         await updateOrderStatus(updatedTransaction.order_id, orderStatus);
         console.log(`Order status updated to ${orderStatus} for order ID: ${updatedTransaction.order_id}`);
+        
+        // Reduce stock when payment is successful
+        if (event.event === 'charge.success') {
+          console.log(`Processing stock reduction for successful payment, order ID: ${updatedTransaction.order_id}`);
+          try {
+            const orderItems = await getOrderItems(updatedTransaction.order_id);
+            console.log(`Found ${orderItems.length} items in order ${updatedTransaction.order_id}`);
+            
+            for (const item of orderItems) {
+              const result = await reduceProductStock(item.product_id, item.quantity);
+              if (result) {
+                console.log(`✓ Stock reduced for product ${item.product_id} by ${item.quantity}. New stock: ${result.stock}`);
+              } else {
+                console.log(`⚠ Failed to reduce stock for product ${item.product_id} - insufficient stock`);
+              }
+            }
+          } catch (stockError) {
+            console.error(`❌ Failed to reduce stock for order ${updatedTransaction.order_id}:`, stockError);
+          }
+        }
       } catch (error) {
         console.error(`Failed to update order status to ${orderStatus} for order ID: ${updatedTransaction.order_id}`, error);
       }

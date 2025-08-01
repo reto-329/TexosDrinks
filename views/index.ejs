@@ -17,6 +17,8 @@
 </head>
 <body>
     <%- include('partials/headerSelector', { user: user || null }) %>
+    <script src="/scripts/addToCart.js"></script>
+    <script src="/scripts/cartNotification.js"></script>
 
     <main>
         <!-- Hero Section -->
@@ -75,10 +77,12 @@
                                     <div class="product-price">₦<%= Number(product.price).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></div>
                                 </div>
                                 <div class="product-actions">
-                                    <button class="add-to-cart-btn" data-product-id="<%= product.id %>">
-                                        <i class="fas fa-shopping-cart" aria-hidden="true"></i>
-                                        Add to Cart
-                                    </button>
+                                    <div class="product-card" data-product-id="<%= product.id %>" data-product-name="<%= product.name %>" data-product-price="<%= product.price %>" data-product-image="<%= product.image_url %>" data-product-stock="<%= product.stock_quantity || 100 %>">
+                                        <button class="add-to-cart-btn">
+                                            <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                                            Add to Cart
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         <% }); %>
@@ -120,79 +124,6 @@
 
     <%- include('partials/footer') %>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add to cart functionality
-            const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-            
-            // Success message element
-            let successMsg = document.createElement('div');
-            successMsg.id = 'cart-success-message';
-            successMsg.style.display = 'none';
-            successMsg.style.position = 'fixed';
-            successMsg.style.top = '30px';
-            successMsg.style.right = '30px';
-            successMsg.style.background = '#28a745';
-            successMsg.style.color = '#fff';
-            successMsg.style.padding = '16px 28px';
-            successMsg.style.borderRadius = '8px';
-            successMsg.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-            successMsg.style.zIndex = '9999';
-            successMsg.style.fontWeight = '600';
-            successMsg.innerText = 'Product added to cart!';
-            document.body.appendChild(successMsg);
-            
-            function showSuccessMessage() {
-                successMsg.style.display = 'block';
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 2000);
-            }
-            
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = this.getAttribute('data-product-id');
-                    addToCart(productId, 1);
-                });
-            });
-            
-            function addToCart(productId, quantity) {
-                // Check if user is logged in
-                const isLoggedIn = "<%= user ? 'true' : 'false' %>";
-                
-                if (isLoggedIn === "true") {
-                    // User is logged in, use the API
-                    fetch('/api/cart', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ product_id: productId, quantity })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            showSuccessMessage();
-                            // Update cart count if needed
-                            if (window.updateLoggedInCartCount) {
-                                window.updateLoggedInCartCount();
-                            } else if (window.updateCartCount) {
-                                window.updateCartCount();
-                            }
-                        } else {
-                            alert(data.error || 'Failed to add product to cart');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error adding to cart:', error);
-                        alert('Error adding product to cart');
-                    });
-                } else {
-                    // User is not logged in, redirect to login page
-                    window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
-                }
-            }
-        });
-    </script>
+    <meta name="user-logged-in" content="<%= user ? 'true' : 'false' %>">
 </body>
 </html>

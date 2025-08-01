@@ -6,6 +6,7 @@
     <title>Texos Drinks:: Products</title>
     <link rel="stylesheet" href="/css/header-responsive.css">
     <link rel="stylesheet" href="/css/products.css">
+    <link rel="stylesheet" href="/css/products-table.css">
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/header2.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -131,13 +132,7 @@
                 </div>
             </div>
 
-            <!-- List View Header (only visible in list view) -->
-            <div class="products-list-header" id="productsListHeader" style="display: none;">
-                <div class="header-cell">Product</div>
-                <div class="header-cell">Price</div>
-                <div class="header-cell">Status</div>
-                <div class="header-cell">Action</div>
-            </div>
+
 
             <!-- Products Grid/List Container -->
             <div class="products-container">
@@ -197,51 +192,107 @@
                         </div>
                     <% } %>
                 </div>
-                <!-- List View -->
-                <div class="products-list list-view" id="productsList" style="display:none;">
+                <!-- Enhanced Table List View -->
+                <div class="products-table-container list-view" id="productsList" style="display:none;">
                     <% if (products && products.length > 0) { %>
-                        <% products.forEach(function(product) { %>
-                            <div class="product-list-item <%= !product.inStock ? 'out-of-stock' : '' %>"
-                                data-product-id="<%= product.id %>"
-                                data-product-name="<%= product.name %>"
-                                data-product-price="<%= product.price %>"
-                                data-product-image="<%= product.image_url %>"
-                                data-product-stock="<%= product.stock || product.stockCount || 0 %>">
-                                <div class="list-image">
-                                    <img src="<%= product.image_url || '/Images/logo1.png' %>" alt="<%= product.name %>" />
-                                </div>
-                                <div class="list-details">
-                                    <div class="list-title-row">
-                                        <a class="list-product-name" href="/products/<%= product.id %>"><%= product.name %></a>
-                                        <% if (product.is_new) { %><span class="list-badge new">New</span><% } %>
-                                        <% if (!product.inStock) { %><span class="list-badge out-of-stock">Out of Stock</span><% } %>
-                                    </div>
-                                    <div class="list-meta">
-                                        <span class="list-category"><i class="fas fa-tags"></i> <%= product.categoryName %></span>
-                                    </div>
-                                    <div class="list-description">
-                                        <%= product.description ? product.description.substring(0, 120) + (product.description.length > 120 ? '...' : '') : 'No description available.' %>
-                                    </div>
-                                </div>
-                                <div class="list-price-action">
-                                    <div class="list-price">
-                                        <span class="current-price">₦<%= Number(product.price).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
-                                        <% if (product.originalPrice && product.originalPrice > product.price) { %>
-                                            <span class="original-price">₦<%= Number(product.originalPrice).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
-                                            <span class="discount">-<%= Math.round(100 * (product.originalPrice - product.price) / product.originalPrice) %>%</span>
-                                        <% } %>
-                                    </div>
-                                    <div class="list-actions">
-                                        <% if (product.inStock) { %>
-                                            <button class="add-to-cart-btn" data-product-id="<%= product.id %>"><i class="fas fa-cart-plus"></i> Add to Cart</button>
-                                        <% } else { %>
-                                            <button class="notify-btn" onclick="notifyWhenAvailable('<%= product.id %>', this)"><i class="fas fa-bell"></i> Notify Me</button>
-                                        <% } %>
-                                        <!-- Wishlist button removed -->
-                                    </div>
-                                </div>
-                            </div>
-                        <% }); %>
+                        <div class="table-wrapper">
+                            <table class="products-table">
+                                <thead>
+                                    <tr>
+                                        <th class="product-column">
+                                            <div class="th-content">
+                                                <i class="fas fa-box"></i>
+                                                <span>Product</span>
+                                            </div>
+                                        </th>
+                                        <th class="price-column">
+                                            <div class="th-content">
+                                                <i class="fas fa-tag"></i>
+                                                <span>Price</span>
+                                            </div>
+                                        </th>
+                                        <th class="category-column">
+                                            <div class="th-content">
+                                                <i class="fas fa-folder"></i>
+                                                <span>Category</span>
+                                            </div>
+                                        </th>
+                                        <th class="stock-column">
+                                            <div class="th-content">
+                                                <i class="fas fa-warehouse"></i>
+                                                <span>Stock</span>
+                                            </div>
+                                        </th>
+                                        <th class="status-column">
+                                            <div class="th-content">
+                                                <i class="fas fa-info-circle"></i>
+                                                <span>Status</span>
+                                            </div>
+                                        </th>
+                                        <th class="actions-column">
+                                            <div class="th-content">
+                                                <i class="fas fa-cogs"></i>
+                                                <span>Actions</span>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% products.forEach(function(product) { %>
+                                        <tr class="product-row <%= !product.inStock ? 'out-of-stock' : '' %>"
+                                            data-product-id="<%= product.id %>">
+                                            <td class="product-cell">
+                                                <div class="product-info">
+                                                    <img src="<%= product.image_url || '/Images/logo1.png' %>" alt="<%= product.name %>" class="product-thumb">
+                                                    <div class="product-details">
+                                                        <a href="/products/<%= product.id %>" class="product-name"><%= product.name %></a>
+                                                        <span class="product-size"><%= product.size || '' %></span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="price-cell">
+                                                <span class="current-price">₦<%= Number(product.price).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
+                                                <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                                                    <span class="original-price">₦<%= Number(product.originalPrice).toLocaleString('en-NG', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
+                                                <% } %>
+                                            </td>
+                                            <td class="category-cell">
+                                                <span class="category-tag"><%= product.categoryName %></span>
+                                            </td>
+                                            <td class="stock-cell">
+                                                <span class="stock-count"><%= product.stock || product.stockCount || 0 %></span>
+                                            </td>
+                                            <td class="status-cell">
+                                                <% if (product.inStock) { %>
+                                                    <span class="status-badge in-stock">In Stock</span>
+                                                <% } else { %>
+                                                    <span class="status-badge out-of-stock">Out of Stock</span>
+                                                <% } %>
+                                                <% if (product.is_new) { %>
+                                                    <span class="status-badge new">New</span>
+                                                <% } %>
+                                            </td>
+                                            <td class="actions-cell">
+                                                <div class="action-buttons">
+                                                    <% if (product.inStock) { %>
+                                                        <button class="btn-primary add-to-cart-btn" data-product-id="<%= product.id %>">
+                                                            <i class="fas fa-cart-plus"></i>
+                                                        </button>
+                                                    <% } else { %>
+                                                        <button class="btn-secondary notify-btn" onclick="notifyWhenAvailable('<%= product.id %>', this)">
+                                                            <i class="fas fa-bell"></i>
+                                                        </button>
+                                                    <% } %>
+                                                    <button class="btn-outline view-btn" onclick="window.location.href='/products/<%= product.id %>'">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
                     <% } else { %>
                         <div class="no-products">
                             <div class="no-products-icon"><i class="fas fa-box-open"></i></div>
@@ -310,6 +361,7 @@
     <%- include('partials/footer') %>
     <script src="/scripts/products.js"></script>
     <script src="/scripts/addToCart.js"></script>
+    <script src="/scripts/cartNotification.js"></script>
     <script>
     // Ensure cart count is persistent for guest users
     // (function() {
